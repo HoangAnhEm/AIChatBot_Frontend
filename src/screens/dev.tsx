@@ -1,35 +1,37 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import { View, TextInput, StyleSheet } from "react-native";
 
-type RootStackParamList = {
-  Dev: undefined;
-  Login: undefined;
-  SignUp: undefined;
-};
-
-export default function DevScreen() {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+const PhoneNumberInput = () => {
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   return (
     <View style={styles.container}>
-      <Text>Welcome to Dev Screen</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.button}>Go to Login</Text>
-      </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        placeholder="Nhập số điện thoại"
+        keyboardType="phone-pad" 
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
-  button: {
-    color: 'blue',
-    marginTop: 20,
+  input: {
+    width: "80%",
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    fontSize: 18,
   },
 });
+
+export default PhoneNumberInput;

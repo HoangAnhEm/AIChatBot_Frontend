@@ -5,3 +5,4 @@ type RootStackParamList = {
   };
 
 declare module "*.jpg"
+declare module "*.png"
