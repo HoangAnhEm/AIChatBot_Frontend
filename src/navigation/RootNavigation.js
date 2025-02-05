@@ -16,14 +16,14 @@ const Stack = createStackNavigator();
 const RootNavigator = () => {
   return (  
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="NewTransferScreen" component={NewTransferScreen} />
         <Stack.Screen name="TransferComplete" component={TransferComplete} />
         <Stack.Screen name="DevScreen2" component={DevScreen2} />
         <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
         <Stack.Screen name="DevScreen" component={DevScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="NewTransferScreen" component={NewTransferScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,7 +1,11 @@
 type RootStackParamList = {
-    Dev: undefined;
+    Home: undefined;
+    NewTransferScreen: undefined;
+    TransferComplete: undefined;
+    DevScreen2: undefined;
+    PaymentScreen: undefined;
+    DevScreen: undefined;
     Login: undefined;
-    SignUp: undefined;
   };
 
 declare module "*.jpg"

@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 
 const transactions = [
@@ -16,6 +17,8 @@ const transactions = [
 ];
 
 const HomeScreen = () => {
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -49,7 +52,7 @@ const HomeScreen = () => {
         <Text style={styles.sectionTitle}>Easy Operations</Text>
         <View style={styles.operationsRow}>
           {['refresh-ccw', 'send', 'arrow-down', 'file-text', 'grid'].map((icon, index) => (
-            <TouchableOpacity key={index} style={styles.operationButton}>
+            <TouchableOpacity key={index} style={styles.operationButton} onPress={() => {navigation.navigate('NewTransferScreen')}}>
               <Icon name={icon} size={24} color="#555" />
               <Text> New  </Text>
             </TouchableOpacity>

@@ -68,9 +68,7 @@ export default function Login() {
             Don&apos;t have an account? &nbsp;
           </Text>
           <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('SignUp'); // Điều hướng tới màn hình đăng ký
-            }}
+            onPress={() => {}}
           >
             <Text style={{ color: colors.pink, fontWeight: '600', fontSize: 14 }}> Sign Up</Text>
           </TouchableOpacity>
