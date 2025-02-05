@@ -1,37 +1,34 @@
-import React, { useState } from "react";
-import { View, TextInput, StyleSheet } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet } from "react-native";
 
-const PhoneNumberInput = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
-
+export default function App() {
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập số điện thoại"
-        keyboardType="phone-pad" 
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-      />
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text>Hello, world!</Text>
+      </View>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Footer with marginBottom</Text>
+      </View>
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  input: {
-    width: "80%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    fontSize: 18,
+  footer: {
+    padding: 10,
+    backgroundColor: "#ccc",
+    marginBottom: 20, // Margin bottom
+  },
+  footerText: {
+    fontSize: 16,
   },
 });
-
-export default PhoneNumberInput;

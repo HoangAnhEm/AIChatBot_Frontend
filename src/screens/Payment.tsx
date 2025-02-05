@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 import { Dropdown } from "react-native-element-dropdown";
 import { Ionicons } from "@expo/vector-icons";
 import Icon from "react-native-vector-icons/Feather";
@@ -12,6 +14,7 @@ const countries = [
 ];
 
 const PaymentScreen = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const [transaction, settransaction] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -30,7 +33,7 @@ const PaymentScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton} onPress={() => {navigation.goBack()}}>
         <Ionicons name="arrow-back" size={24} color="green" />
         <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
@@ -68,7 +71,7 @@ const PaymentScreen = () => {
           onChangeText={setIban}
         />
 
-        <TouchableOpacity style={styles.proceedButton}>
+        <TouchableOpacity style={styles.proceedButton} onPress={() => {navigation.navigate("TransferComplete")}}>
           <Text style={styles.proceedText}>Proceed</Text>
         </TouchableOpacity>
       </View>
