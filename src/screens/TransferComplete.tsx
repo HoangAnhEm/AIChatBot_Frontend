@@ -9,12 +9,6 @@ const TransferComplete = () => {
     
   return (
     <View style={styles.container}>
-      {/* Back Button */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color="green" />
-        <Text style={styles.backText}>Back</Text>
-      </TouchableOpacity>
-
       {/* Card */}
       <View style={styles.card}>
         <Ionicons name="checkmark-circle" size={80} color="#2ECC71" />
@@ -22,12 +16,12 @@ const TransferComplete = () => {
 
         {/* Buttons */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.backHomeButton}>
+          <TouchableOpacity style={styles.backHomeButton} onPress={() => navigation.reset({index: 0, routes: [{name: "Home"}]})}>
             <Text style={styles.backHomeText}>Back to home</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.newPaymentButton}>
-            <Text style={styles.newPaymentText}>New payment</Text>
+          <TouchableOpacity style={styles.newPaymentButton} onPress={() => navigation.reset({index: 0, routes: [{name: "Home"}, {name: "NewTransferScreen"}]})}>
+            <Text style={styles.newPaymentText}>New transfer</Text>
           </TouchableOpacity>
         </View>
       </View>

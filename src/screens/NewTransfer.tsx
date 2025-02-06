@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 import Icon from "react-native-vector-icons/Feather";
+import CustomModal from "../components/modal"
 
 const transactions = [
   { id: "1", name: "Dan", amount: "-$314", avatar: require("../assets/avatar.png"), color: "red" },
@@ -14,16 +15,18 @@ const transactions = [
 const NewTransferScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  const confirmTransaction = () => {
-    if (transactionType !== '' && wallet !== '' && transactionPartner != ''){
-      navigation.navigate('PaymentScreen');
-    }
-  }
+  const [isModalVisible, setIsModalVisible] = useState(false);
   
   const [transactionType, setTransactionType] = useState("");
   const [wallet, setWallet] = useState("");
   const [transactionPartner, setTransactionPartner] = useState("");
-
+  
+  const confirmTransaction = () => {
+    if (transactionType !== '' && wallet !== '' && transactionPartner != '')
+      navigation.navigate('TransferDetail', {type: transactionType, wallet: wallet, transactionPartner: transactionPartner});
+    else
+      setIsModalVisible(true);
+  }
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
@@ -97,9 +100,13 @@ const NewTransferScreen = () => {
 
       <View style={styles.gap}></View>
 
+      {/* Nut confirm */}
       <TouchableOpacity style={styles.proceedButton} onPress={() => {confirmTransaction()}}>
         <Text style={styles.proceedText}>Proceed</Text>
       </TouchableOpacity>
+
+      {/* Modal hiển thị thông báo */}
+      <CustomModal visible={isModalVisible} message="Vui lòng nhập đầy đủ thông tin!" onClose={() => setIsModalVisible(false)} />
     </SafeAreaView>
   );
 };
@@ -163,6 +170,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+
 });
 
 export default NewTransferScreen;
