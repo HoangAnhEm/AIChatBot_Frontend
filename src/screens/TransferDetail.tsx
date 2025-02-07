@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Icon from "react-native-vector-icons/Feather";
 import CustomModal from "../components/modal"
 
-const countries = [
+const categories = [
   { label: "Entertainment ", value: "US" },
   { label: "Shopping ", value: "UK" },
   { label: "Transportation ", value: "DE" },
@@ -21,7 +21,7 @@ const TransferDetail = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [transaction, settransaction] = useState("");
-  const [categories, setCategories] = useState(null);
+  const [categorie, setCategorie] = useState(null);
   const [description, setDescription] = useState("");
 
   const handleInputChange = (text : string) => {
@@ -36,7 +36,7 @@ const TransferDetail = () => {
     };
   
   const handleProceed = () => {
-    if (transaction !== '' && categories !== '' && description != '')
+    if (transaction !== '' && categorie !== '' && description != '')
       navigation.navigate("TransferComplete")
     else
       setIsModalVisible(true);
@@ -73,12 +73,12 @@ const TransferDetail = () => {
 
         <Dropdown
           style={styles.dropdown}
-          data={countries}
+          data={categories}
           labelField="label"
           valueField="value"
-          placeholder="categories"
-          value={categories}
-          onChange={(item) => setCategories(item.value)}
+          placeholder="categorie"
+          value={categorie}
+          onChange={(item) => setCategorie(item.value)}
         />
 
         <TextInput

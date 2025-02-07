@@ -1,34 +1,42 @@
-import { SafeAreaView, View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { ScrollView, View, StyleSheet,Text } from "react-native";
+import TimeSelect from "../components/timeSelectButton"; // Import component TimeSelect đã tạo
+import BottomTabNavigator from "../components/bottomNaviagtor"
 
-export default function App() {
+const DevScreen = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Text>Hello, world!</Text>
+    <View style={styles.container}>
+      <View>
+        <Text> aisdhaksdjaksd </Text>
       </View>
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Footer with marginBottom</Text>
-      </View>
-    </SafeAreaView>
+
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false} 
+        contentContainerStyle={styles.scrollContainer}
+      >
+        <TimeSelect label="This Week" onPress={() => {}} />
+        <TimeSelect label="Last Week" onPress={() => {}} />
+        <TimeSelect label="Last Month" onPress={() => {}} />
+        <TimeSelect label="Last Year" onPress={() => {}} />
+        <TimeSelect label="All Time" onPress={() => {}} />
+      </ScrollView>
+
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  footer: {
-    padding: 10,
-    backgroundColor: "#ccc",
-    marginBottom: 20, // Margin bottom
-  },
-  footerText: {
-    fontSize: 16,
+  scrollContainer: {
+    width: 300, height: 300,
+    flexDirection: "row", // Xếp các item theo hàng ngang
+    paddingVertical: 10,
   },
 });
+
+export default DevScreen;

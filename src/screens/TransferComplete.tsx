@@ -20,7 +20,7 @@ const TransferComplete = () => {
             <Text style={styles.backHomeText}>Back to home</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.newPaymentButton} onPress={() => navigation.reset({index: 0, routes: [{name: "Home"}, {name: "NewTransferScreen"}]})}>
+          <TouchableOpacity style={styles.newPaymentButton} onPress={() => navigation.reset({index: 1, routes: [{name: "Home"}, {name: "NewTransferStack"}]})}>
             <Text style={styles.newPaymentText}>New transfer</Text>
           </TouchableOpacity>
         </View>
