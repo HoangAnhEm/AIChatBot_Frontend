@@ -25,7 +25,7 @@ export default function SignUp() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [userEmail, setUserEmail] = useState('');
-    const onHandleSignUp = () => {
+    const onHandleValidate = () => {
             //Chua co backend
         };
 
@@ -39,7 +39,6 @@ export default function SignUp() {
                      style={styles.input}
                      placeholder="username"
                      autoCapitalize="none"
-                     textContentType="emailAddress"
                      autoFocus
                      value={username}
                      onChangeText={(text) => setUsername(text)}
@@ -64,7 +63,7 @@ export default function SignUp() {
                      value={password}
                      onChangeText={(text) => setPassword(text)}
                 />
-                <TouchableOpacity style={styles.button} onPress={onHandleSignUp}>
+                <TouchableOpacity style={styles.button} onPress={onHandleValidate}>
                      <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Create!!!</Text>
                 </TouchableOpacity>
             </SafeAreaView>

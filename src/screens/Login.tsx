@@ -62,7 +62,7 @@ export default function Test() {
                     </Text>
                         <TouchableOpacity
                         onPress={() => {
-                          navigation.navigate('SignUp');
+                          navigation.navigate('ForgotPassword');
                         }}
                         >
                             <Text style={{ color: colors.pink, fontWeight: '600', fontSize: 14 }}> Recover Password</Text>
