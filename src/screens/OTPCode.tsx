@@ -3,7 +3,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 
 import { colors } from '../constants/colors';
-import backImage from '../assets/signup.png';
+import OTPField from '../components/OTP.tsx';
+import backImage from '../assets/otp_screen.png';
 
 import {
   Text,
@@ -20,50 +21,34 @@ import {
 
 const { height, width } = Dimensions.get('window');
 
-export default function SignUp() {
+
+export default function ValidateCodeScreen() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const onHandleValidate = () => {
-            //Chua co backend
-        navigation.navigate('OTP') ;
+    const[code, setCode] = useState('');
+
+
+    const onHandleValidate = () =>{
+        if(code != 'Lmao@gmail.com'){
+
+            }
+        }
+
+    const showAlert = (title, message) => {
+          Alert.alert(
+            title,
+            message,
+            [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+            { cancelable: true }
+          );
         };
 
-    return(
+return(
         <View style={styles.container}>
             <Image source={backImage} style={styles.backImage} />
             <Text style={styles.title}>Sign up</Text>
             <SafeAreaView style={styles.form}>
                 <Text style={styles.placeHolder}>Fill in these fields!!!</Text>
-                <TextInput
-                     style={styles.input}
-                     placeholder="username"
-                     autoCapitalize="none"
-                     autoFocus
-                     value={username}
-                     onChangeText={(text) => setUsername(text)}
-                />
-                <TextInput
-                     style={styles.input}
-                     placeholder="user-email"
-                     autoCapitalize="none"
-                     keyboardType="email-address"
-                     textContentType="emailAddress"
-                     autoFocus
-                     value={userEmail}
-                     onChangeText={(text) => setUserEmail(text)}
-                />
-                <TextInput
-                     style={styles.input}
-                     placeholder="password"
-                     autoCapitalize="none"
-                     autoCorrect={false}
-                     secureTextEntry
-                     textContentType="password"
-                     value={password}
-                     onChangeText={(text) => setPassword(text)}
-                />
+                <OTPField length={6} onComplete={onHandleValidate} />
                 <TouchableOpacity style={styles.button} onPress={onHandleValidate}>
                      <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Create!!!</Text>
                 </TouchableOpacity>
@@ -71,6 +56,7 @@ export default function SignUp() {
         </View>
         );
     }
+
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
