@@ -9,7 +9,7 @@ import BottomTabNavigator from "../components/bottomNaviagtor";
 const tabs = [
   { name: "Home", component: HomeScreen, icon: "home" },
   { name: "NewTransferStack", component: NewTransferStack, icon: "exchange" },
-  { name: "AIChatStack", component: NewTransferStack, icon: "comments" },
+  { name: "AIChatStack", component: DevScreen, icon: "comments" },
   { name: "TransactionLogStack", component: TransactionLogStack, icon: "history" },
   { name: "DevScreen", component: DevScreen, icon: "history" },
 ];

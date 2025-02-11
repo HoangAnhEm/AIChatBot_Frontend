@@ -5,6 +5,9 @@ import TransactionItem from "../components/transactionItem";
 import Icon from "react-native-vector-icons/Feather";
 
 import TimeSelect from "../components/timeSelectButton"
+import FilterModal from "../components/filterModal";
+import TransferEditModal from "../components/transferEdit";
+
 
 const transactions = [
   { id: "1", type: "Cash-in", amount: 100.0, status: "confirmed", date: "17 Sep 2023", time: "10:34 AM" },
@@ -39,7 +42,10 @@ const wallets = [
   
 
 const TransactionsScreen = () => {
-    const [selectedWallet, setSelectedWallet] = useState(null);
+  const [isFilterVisible, setFilterVisible] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState(null);
+  const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [selectedTrans, setSelectedTrans] = useState(0);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -55,10 +61,10 @@ const TransactionsScreen = () => {
           onChange={(item) => setSelectedWallet(item.label)}
           />
 
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => {}}>
           <Icon name="search" size={17} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => {setFilterVisible(true)}}>
           <Text>⋮</Text>
         </TouchableOpacity>
       </View>
@@ -76,14 +82,18 @@ const TransactionsScreen = () => {
         <FlatList
           data={transactions}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <TransactionItem transaction = {item} />}
+          renderItem={({ item }) => <TransactionItem transaction = {item} onPress={() => {setEditModalVisible(true)}}/>}
         />
       </View>
 
       {/* Nút Floating Button */}
-      <TouchableOpacity style={styles.floatingButton}>
+      {/* <TouchableOpacity style={styles.floatingButton}>
         <Text style={styles.floatingButtonText}>+</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+
+      {/* Pop Up Filter */}
+      <FilterModal isVisible={isFilterVisible} onClose={() => setFilterVisible(false)} />
+      <TransferEditModal visible={isEditModalVisible} onClose={() => setEditModalVisible(false)} transactionInfo={transactions[selectedTrans]}/>
     </SafeAreaView>
   );
 };
@@ -106,18 +116,18 @@ const styles = StyleSheet.create({
   transactionsLog:{
     paddingHorizontal: 20,
   },
-  floatingButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: "#3D82F6",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  floatingButtonText: { color: "white", fontSize: 30 },
+  // floatingButton: {
+  //   position: "absolute",
+  //   bottom: 20,
+  //   right: 20,
+  //   backgroundColor: "#3D82F6",
+  //   width: 50,
+  //   height: 50,
+  //   borderRadius: 25,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
+  // floatingButtonText: { color: "white", fontSize: 30 },
   dropdown: {
     flex: 1,
     backgroundColor: "#BEC1EB",

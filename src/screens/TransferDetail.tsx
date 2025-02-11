@@ -71,6 +71,14 @@ const TransferDetail = () => {
             onChangeText={handleInputChange}
         />
 
+        
+        <TextInput
+          style={styles.input}
+          placeholder="Description"
+          value={description}
+          onChangeText={setDescription}
+        />      
+
         <Dropdown
           style={styles.dropdown}
           data={categories}
@@ -79,13 +87,6 @@ const TransferDetail = () => {
           placeholder="categorie"
           value={categorie}
           onChange={(item) => setCategorie(item.value)}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Description"
-          value={description}
-          onChangeText={setDescription}
         />
 
         <TouchableOpacity style={styles.proceedButton} onPress={() => {handleProceed()}}>

@@ -25,9 +25,9 @@ const BottomTabNavigator = ({ tabs }: BottomTabNavigatorProps) => {
 //         tabBarActiveTintColor: 'rgba(135, 206, 250, 1)',
 //         tabBarInactiveTintColor: "gray",
 //       })}
-      screenOptions={() => ({
+      screenOptions={({route}) => ({
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: route.name === 'NewTransferStack' ? styles.tabBarHidden : styles.tabBar,
         tabBarActiveTintColor: 'rgba(135, 206, 250, 1)',
         tabBarInactiveTintColor: "gray",
       })}
@@ -75,6 +75,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
+  },
+  tabBarHidden: {
+    display: 'none',
   },
 });
 

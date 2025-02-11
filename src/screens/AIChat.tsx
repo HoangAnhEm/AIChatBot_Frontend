@@ -10,7 +10,7 @@ const initialMessages = [
   { id: "5", text: "Not so good...", sender: "other" },
 ];
 
-const DevScreen = () => {
+const ChatScreen = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [inputText, setInputText] = useState("");
 
@@ -89,4 +89,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DevScreen;
+export default ChatScreen;

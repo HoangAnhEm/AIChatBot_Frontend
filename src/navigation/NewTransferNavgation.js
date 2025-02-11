@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 
 export default function NewTransferStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false , }}>
+    <Stack.Navigator screenOptions={{ headerShown: false}}>
       <Stack.Screen name="NewTransfer" component={NewTransferScreen} />
       <Stack.Screen name="TransferDetail" component={TransferDetailScreen} />
       <Stack.Screen name="TransferComplete" component={TransferCompleteScreen} />

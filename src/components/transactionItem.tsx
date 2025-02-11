@@ -11,7 +11,7 @@ type Transaction = {
 };
     
 
-const TransactionItem = ({transaction} : {transaction: Transaction }) => {
+const TransactionItem = ({transaction, onPress} : {transaction: Transaction, onPress: () => void }) => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "pending":
@@ -26,7 +26,7 @@ const TransactionItem = ({transaction} : {transaction: Transaction }) => {
   }
 
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       {/* Icon Bên Trái */}
       <View style={styles.iconContainer}>
         <Image source={require("../assets/icon.png")} style={styles.icon} />
