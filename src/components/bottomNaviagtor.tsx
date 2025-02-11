@@ -27,7 +27,7 @@ const BottomTabNavigator = ({ tabs }: BottomTabNavigatorProps) => {
 //       })}
       screenOptions={({route}) => ({
         headerShown: false,
-        tabBarStyle: route.name === 'NewTransferStack' ? styles.tabBarHidden : styles.tabBar,
+        tabBarStyle: (route.name === 'NewTransferStack' || route.name === 'AIChatStack') ? styles.tabBarHidden : styles.tabBar,
         tabBarActiveTintColor: 'rgba(135, 206, 250, 1)',
         tabBarInactiveTintColor: "gray",
       })}
