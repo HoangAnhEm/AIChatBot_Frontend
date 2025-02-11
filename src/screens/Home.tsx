@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
+
+import FeatureButton from '../components/featureButton'
 
 const transactions = [
   { id: '1', title: 'Rental Income', date: '14 July 2021', amount: '+$6,500.00', color: 'green', icon: 'home' },
@@ -20,8 +22,7 @@ const HomeScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   
   return (
-    <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.safeAreaView}>
         {/* Header */}
         <View style={styles.header}>
           <Icon name="menu" size={24} color="#000" />
@@ -51,43 +52,42 @@ const HomeScreen = () => {
         {/* Easy Operations */}
         <Text style={styles.sectionTitle}>Easy Operations</Text>
         <View style={styles.operationsRow}>
-          {['refresh-ccw', 'send', 'arrow-down', 'file-text', 'grid'].map((icon, index) => (
-            <TouchableOpacity key={index} style={styles.operationButton} onPress={() => {navigation.navigate('NewTransferScreen')}}>
-              <Icon name={icon} size={24} color="#555" />
-              <Text> New  </Text>
-            </TouchableOpacity>
-          ))}
+            <FeatureButton label='New' icon={'exchange'} onPress={() => {navigation.navigate('NewTransferStack')}}/>
+            <FeatureButton label='History' icon={'history'} onPress={() => {navigation.navigate('TransactionsScreen')}}/>
         </View>
 
         {/* Transactions */}
         <Text style={styles.sectionTitle}>Previous Transactions</Text>
-        {transactions.map((item) => (
-          <View key={item.id} style={styles.transactionItem}>
-            <Icon name={item.icon} size={24} color="#555" />
-            <View style={styles.transactionDetails}>
-              <Text style={styles.transactionTitle}>{item.title}</Text>
-              <Text style={styles.transactionDate}>{item.date}</Text>
+        <FlatList
+          data={transactions}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.transactionItem}>
+              <Icon name={item.icon} size={24} color="#555" />
+              <View style={styles.transactionDetails}>
+                <Text style={styles.transactionTitle}>{item.title}</Text>
+                <Text style={styles.transactionDate}>{item.date}</Text>
+              </View>
+              <Text style={[styles.transactionAmount, { color: item.color }]}>{item.amount}</Text>
             </View>
-            <Text style={[styles.transactionAmount, { color: item.color }]}>{item.amount}</Text>
-          </View>
-        ))}
-      </ScrollView>
+          )}
+        />
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         {['home', 'bar-chart', 'file-text', 'user'].map((icon, index) => (
           <TouchableOpacity key={index} style={styles.navButton}>
             <Icon name={icon} size={24} color={icon === 'home' ? '#74C0FC' : '#999'} />
           </TouchableOpacity>
         ))}
-      </View>
-    </View>
+      </View> */}
+    </SafeAreaView>
   );
 };
 
 // Styles
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC', padding: 20 },
+  safeAreaView: { flex: 1, backgroundColor: '#F8FAFC', padding: 20, marginTop: 30},
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   headerTitle: { fontSize: 18, fontWeight: 'bold' },
   profileIcon: { width: 24, height: 24, backgroundColor: '#E0E0E0', borderRadius: 12 },

@@ -1,18 +1,27 @@
-import React, { useState } from "react";
-import { View, TextInput, StyleSheet } from "react-native";
+import React from "react";
+import { ScrollView, View, StyleSheet,Text } from "react-native";
+import TimeSelect from "../components/timeSelectButton"; // Import component TimeSelect đã tạo
+import BottomTabNavigator from "../components/bottomNaviagtor"
 
-const PhoneNumberInput = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
-
+const DevScreen = () => {
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập số điện thoại"
-        keyboardType="phone-pad" 
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-      />
+      <View>
+        <Text> aisdhaksdjaksd </Text>
+      </View>
+
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false} 
+        contentContainerStyle={styles.scrollContainer}
+      >
+        <TimeSelect label="This Week" onPress={() => {}} />
+        <TimeSelect label="Last Week" onPress={() => {}} />
+        <TimeSelect label="Last Month" onPress={() => {}} />
+        <TimeSelect label="Last Year" onPress={() => {}} />
+        <TimeSelect label="All Time" onPress={() => {}} />
+      </ScrollView>
+
     </View>
   );
 };
@@ -23,15 +32,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  input: {
-    width: "80%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    fontSize: 18,
+  scrollContainer: {
+    width: 300, height: 300,
+    flexDirection: "row", // Xếp các item theo hàng ngang
+    paddingVertical: 10,
   },
 });
 
-export default PhoneNumberInput;
+export default DevScreen;
