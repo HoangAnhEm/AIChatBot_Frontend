@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, TextInput, StyleSheet, TextInputProps } from 'react-native';
+import { View, TextInput, StyleSheet, KeyboardAvoidingView } from 'react-native';
 
 interface OTPInputProps {
   length?: number;
@@ -7,65 +7,79 @@ interface OTPInputProps {
 }
 
 const OTPInput: React.FC<OTPInputProps> = ({ length = 4, onComplete }) => {
-  const [otp, setOtp] = useState<string[]>(new Array(length).fill(''));
-  const inputs = useRef<TextInput[]>([]);
+  const [otp, setOtp] = useState<string[]>(Array(length).fill(''));
+  const inputRefs = useRef<(TextInput | null)[]>(Array(length).fill(null));
 
-  const handleChange = (text: string, index: number) => {
-    if (!/^\d*$/.test(text)) return; // Only allow numbers
-
-    let newOtp = [...otp];
-    newOtp[index] = text;
+  const updateOTP = (value: string, index: number) => {
+    const newOtp = [...otp];
+    newOtp[index] = value;
     setOtp(newOtp);
 
-    if (text && index < length - 1) {
-      inputs.current[index + 1]?.focus(); // Move to next input
+    // Move focus or complete
+    if (value && index < length - 1) {
+      inputRefs.current[index + 1]?.focus();
     }
 
-    const otpValue = newOtp.join('');
-    if (otpValue.length === length) {
-      onComplete?.(otpValue); // Trigger callback when OTP is complete
+    const completedOTP = newOtp.join('');
+    if (completedOTP.length === length) {
+      onComplete?.(completedOTP);
     }
   };
 
-  const handleKeyPress = (event: { nativeEvent: { key: string } }, index: number) => {
-    if (event.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
-      inputs.current[index - 1]?.focus(); // Move to previous input
+  const handleKeyPress = (event: any, index: number) => {
+    const { nativeEvent } = event;
+
+    if (nativeEvent.key === 'Backspace') {
+      // Clear current input or move back
+      if (otp[index] === '') {
+        if (index > 0) {
+          inputRefs.current[index - 1]?.focus();
+        }
+      } else {
+        updateOTP('', index);
+      }
     }
   };
 
   return (
-    <View style={styles.container}>
-      {otp.map((digit, index) => (
-        <TextInput
-          key={index}
-          ref={(el) => (inputs.current[index] = el as TextInput)}
-          style={styles.input}
-          keyboardType="numeric"
-          maxLength={1}
-          value={digit}
-          onChangeText={(text) => handleChange(text, index)}
-          onKeyPress={(event) => handleKeyPress(event, index)}
-        />
-      ))}
-    </View>
+    <KeyboardAvoidingView style={styles.container}>
+      <View style={styles.boxContainer}>
+        {otp.map((digit, index) => (
+          <TextInput
+            key={index}
+            ref={el => inputRefs.current[index] = el}
+            style={styles.box}
+            keyboardType="number-pad"
+            maxLength={1}
+            value={digit}
+            onChangeText={(text) => updateOTP(text, index)}
+            onKeyPress={(event) => handleKeyPress(event, index)}
+            textAlign="center"
+            autoFocus={index === 0}
+          />
+        ))}
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
+  },
+  boxContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
   },
-  input: {
+  box: {
     width: 50,
     height: 50,
     borderWidth: 2,
     borderColor: '#3498db',
-    textAlign: 'center',
-    fontSize: 24,
     marginHorizontal: 5,
     borderRadius: 8,
+    fontSize: 24,
   },
 });
 
