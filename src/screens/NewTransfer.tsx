@@ -42,11 +42,11 @@ const NewTransferScreen = () => {
 
       {/* Action Buttons */}
       <View style={styles.actions}>
-        <TouchableOpacity style={[styles.actionButton, transactionType === "Send" && styles.selectedActionButton]} onPress={() => {setTransactionType("Send")}}>
+        <TouchableOpacity style={[styles.actionButton, transactionType === "Gửi" && styles.selectedActionButton]} onPress={() => {setTransactionType("Gửi")}}>
           <Icon name="arrow-up" size={30} color="#4a90e2" />
           <Text style={styles.actionText}>Send money</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.actionButton, transactionType === "Get" && styles.selectedActionButton]} onPress={() => {setTransactionType("Get")}}>
+        <TouchableOpacity style={[styles.actionButton, transactionType === "Nhận" && styles.selectedActionButton]} onPress={() => {setTransactionType("Nhận")}}>
           <Icon name="arrow-down" size={30} color="#4a90e2" />
           <Text style={styles.actionText}>Get money</Text>
         </TouchableOpacity>

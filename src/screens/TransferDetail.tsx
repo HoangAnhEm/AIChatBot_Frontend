@@ -6,12 +6,13 @@ import { Dropdown } from "react-native-element-dropdown";
 import { Ionicons } from "@expo/vector-icons";
 import Icon from "react-native-vector-icons/Feather";
 import CustomModal from "../components/modal"
+import { createTransactions } from "../api/transactionApi";
 
 const categories = [
-  { label: "Entertainment ", value: "US" },
-  { label: "Shopping ", value: "UK" },
-  { label: "Transportation ", value: "DE" },
-  { label: "Health & Wellness", value: "FR" },
+  { label: "Entertainment ", value: "Giải trí" },
+  { label: "Shopping ", value: "Mua sắm" },
+  { label: "Transportation ", value: "Di chuyển" },
+  { label: "Health & Wellness", value: "Sức khỏe" },
 ];
 
 const TransferDetail = () => {
@@ -25,8 +26,12 @@ const TransferDetail = () => {
   const [description, setDescription] = useState("");
 
   const handleInputChange = (text : string) => {
-        let numericValue = text.replace(/\D/g, "");
-        
+        let numericValue
+        if(text.length < transaction.length)
+          numericValue = text.replace(/\D/g, "").slice(0, -1);
+        else
+          numericValue = text.replace(/\D/g, "");
+
         if (numericValue === "") {
             settransaction("");
             return;
@@ -34,10 +39,25 @@ const TransferDetail = () => {
         let formattedValue = Number(numericValue).toLocaleString();
         settransaction(formattedValue + " VND");
     };
-  
-  const handleProceed = () => {
-    if (transaction !== '' && categorie !== '' && description != '')
-      navigation.navigate("TransferComplete")
+
+  const handleProceed = async () => {
+    if (transaction !== '' && categorie !== '' && description != ''){
+      try {
+        const transaction_amount = Number(transaction.replace(/\D/g, ""));
+        const response = await createTransactions({
+          amount: transaction_amount, 
+          partner: route.params.transactionPartner,
+          wallet: route.params.wallet,
+          type: route.params.type,
+          category: categorie,
+          description: description,
+          userId: "64f8c1e5b3a2a4d8f0e7a6b9", 
+        });
+      } catch (error) {
+        console.log("Lỗi", "Không thể thêm giao dịch.");
+      }
+      navigation.navigate("TransferComplete");
+    }
     else
       setIsModalVisible(true);
   };

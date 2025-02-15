@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import signInWithEmailAndPassword from '../api/auth';
+import signInWithEmailAndPassword from '../api/authApi';
 import {
   Text,
   View,
