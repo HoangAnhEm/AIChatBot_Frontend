@@ -73,12 +73,12 @@ const TransferDetail = () => {
         <View style={styles.transferContainer}>
             <View style={styles.avatarContainer}>
               <Image source={require("../assets/avatar.png")} style={styles.avatar} />
-              <Text>User Name</Text>
+              <Text style={styles.name}>User Name</Text>
             </View>
             <Icon name="repeat" size={24} color="green" />
             <View style={styles.avatarContainer}>
               <Image source={require("../assets/avatar.png")} style={styles.avatar} />
-              <Text>{`${route.params.transactionPartner}`}</Text>
+              <Text style={styles.name}>{`${route.params.transactionPartner}`}</Text>
             </View>
         </View>
         <Text style={styles.title}>Enter transaction details</Text>
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   transferContainer: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 40, padding: 20,},
   avatarContainer: {flexDirection: "column"},
   avatar: { width: 60, height: 60, borderRadius: 30 },
-  
+  name: {alignSelf: 'center'},
   backButton: {
     flexDirection: "row",
     alignItems: "center",

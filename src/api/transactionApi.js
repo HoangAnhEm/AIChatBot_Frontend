@@ -1,4 +1,5 @@
 import axios from "axios";
+import Transaction from "../model/Transaction.model"
 
 const API_BASE_URL = "http://10.0.2.2:3000/expense"; 
 
@@ -9,7 +10,7 @@ export const createTransactions = async ({ amount, wallet, partner, type, catego
         { amount, wallet, partner, type, category, description, userId }, 
         {headers: {'Content-Type': 'application/json'}}
     );
-      return response.data;
+      return response.metadata;
     } catch (error) {
       console.error("Lỗi khi tạo giao dịch:", error);
       throw error; 
@@ -17,18 +18,19 @@ export const createTransactions = async ({ amount, wallet, partner, type, catego
 };
 
 export const getTransactions = async ({ category, searchText, startDate, endDate, limit, userId }) => {
-    try {
-        const response = await axios.get(
-          `${API_BASE_URL}/get_fee`, 
-          { category, searchText, startDate, endDate, limit, userId }, 
-          {headers: {'Content-Type': 'application/json'}}
-      );
-        return response.data;
-      } catch (error) {
-        console.error("Lỗi khi lấy giao dịch:", error);
-        throw error; 
-      }
-  };
+  try {
+      const response = await axios.get(`${API_BASE_URL}/get_fee`, {
+          params: { userId, category, searchText, startDate, endDate, limit }, 
+          headers: { 'Content-Type': 'application/json' }
+      });
+      const transactions = response.data.metadata.Expenses.map(tx => new Transaction(tx));
+      return transactions; 
+
+  } catch (error) {
+      console.error("Lỗi khi lấy giao dịch:", error);
+      throw error;
+  }
+};
 
 export const updateTransaction = async (transactionId, updatedData) => {
   try {
