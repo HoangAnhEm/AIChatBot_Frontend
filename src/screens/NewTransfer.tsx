@@ -64,12 +64,13 @@ const NewTransferScreen = () => {
   const fetchData = async () => {
     try {
         const data = await getTransactions({
-          userId: "65f8c1e5b3a2a4d8f0e7a6b9", //fix
           category: "",
+          type: "",
           searchText: "",
           startDate: "",
           endDate: "",
-          limit: 3,
+          page: 1,
+          pageSize: 3,
         });
         setTransactions(data);
     } catch (error) {

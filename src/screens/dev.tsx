@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Alert, StyleSheet } from "react-native";
-// import { createMultipleTransactions } from "./dev2";
+import { View, TouchableOpacity, Button, Text, StyleSheet } from "react-native";
+import { createTransactions } from "../api/transactionApi";
+import { createMultipleTransactions } from "./dev2";
 
 const AddTransactionScreen = () => {
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-
   const handleAddTransaction = async () => {
-    // createMultipleTransactions()
+    // const res = await createMultipleTransactions();
+
+    // console.log(res);
   };
 
   return (
     <View style={styles.container}>
-      <TextInput placeholder="Số tiền" value={amount} onChangeText={setAmount} keyboardType="numeric" />
-      <TextInput placeholder="Danh mục" value={category} onChangeText={setCategory} />
-      <TextInput placeholder="Mô tả" value={description} onChangeText={setDescription} />
-      <Button title="Thêm Giao Dịch" onPress={handleAddTransaction} />
+      <TouchableOpacity style={styles.operationButton} onPress={handleAddTransaction}>
+          <Text style={styles.text}>BUTTON</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -26,7 +24,9 @@ const styles = StyleSheet.create({
     marginTop: 100,
     backgroundColor: '#fff',
     flex: 1,
-  }
+  },
+  operationButton: {backgroundColor: '#BEC1EB', borderRadius: 10, alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 15 , marginRight: 10},
+  text: {color: 'white'},
 });
 
 export default AddTransactionScreen;

@@ -51,7 +51,6 @@ const TransferDetail = () => {
           type: route.params.type,
           category: categorie,
           description: description,
-          userId: "64f8c1e5b3a2a4d8f0e7a6b9", 
         });
       } catch (error) {
         console.log("Lỗi", "Không thể thêm giao dịch.");

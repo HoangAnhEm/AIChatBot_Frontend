@@ -2,17 +2,8 @@ import React, {useState} from "react";
 import { Modal, View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import Icon from "react-native-vector-icons/Feather";
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation} from '@react-navigation/native';
+import Transaction from "../model/Transaction.model";
 
-type Transaction = {
-    id: string;
-    type: string;
-    amount: number;
-    status: string;
-    date: string;
-    time: string;
-};
 
 interface TransferEditModalProps {
   visible: boolean;
@@ -20,18 +11,21 @@ interface TransferEditModalProps {
   transactionInfo: Transaction;
 }
 
+
 const categories = [
-    { label: "Entertainment ", value: "US" },
-    { label: "Shopping ", value: "UK" },
-    { label: "Transportation ", value: "DE" },
-    { label: "Health & Wellness", value: "FR" },
+  { label: "Entertainment ", value: "Giải trí" },
+  { label: "Shopping ", value: "Mua sắm" },
+  { label: "Transportation ", value: "Di chuyển" },
+  { label: "Health & Wellness", value: "Sức khỏe" },
 ];
 
 const TransferEditModal = ({visible, onClose, transactionInfo }: TransferEditModalProps) => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    if(transactionInfo === undefined)
+        return <Text></Text>;
+      
     const [transaction, settransaction] = useState(`${transactionInfo.amount}`);
-    const [categorie, setCategorie] = useState(transactionInfo.type);
-    const [description, setDescription] = useState(transactionInfo.id);
+    const [categorie, setCategorie] = useState(transactionInfo.category);
+    const [description, setDescription] = useState(transactionInfo.description);
 
     const handleInputChange = (text : string) => {
         let numericValue = text.replace(/\D/g, "");
@@ -48,6 +42,11 @@ const TransferEditModal = ({visible, onClose, transactionInfo }: TransferEditMod
         onClose()
       };
 
+    const truncateText = (text: string, maxLength = 7) => {
+      if (!text) return ""; 
+      return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    };
+
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.modalBackground}>
@@ -60,7 +59,7 @@ const TransferEditModal = ({visible, onClose, transactionInfo }: TransferEditMod
                 <Icon name="repeat" size={24} color="green" />
                 <View style={styles.avatarContainer}>
                     <Image source={require("../assets/avatar.png")} style={styles.avatar} />
-                    <Text>{`${transactionInfo.id}`}</Text>
+                    <Text>{truncateText(transactionInfo.partner)}</Text>
                 </View>
             </View>
             <Text style={styles.title}>Enter transaction details</Text>

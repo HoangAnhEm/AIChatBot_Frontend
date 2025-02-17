@@ -19,8 +19,8 @@ const TimeSelect = ({ label, onPress } : TimeSelectProps) => {
 };
 
 const styles = StyleSheet.create({
-    operationButton: {backgroundColor: '#BEC1EB', borderRadius: 10, alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 15 , marginRight: 10},
-    text: {color: 'white'},
+    operationButton: {backgroundColor: 'rgba(103, 111, 227, 0.5)', borderRadius: 10, alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 15 , marginRight: 10},
+    text: {color: 'white', fontWeight: 'bold'},
 });
 
 export default TimeSelect;

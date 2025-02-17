@@ -3,9 +3,8 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 
 const FilterModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () => void }) => {
-  const [selectedCategorie, setSelectedCategorie] = useState("Shopping");
-  const [selectedPeriod, setSelectedPeriod] = useState("This week");
-  const [selectedStatus, setSelectedStatus] = useState("Confirmed");
+  const [selectedCategorie, setSelectedCategorie] = useState("");
+  const [selectedType, setSelectedType] = useState("");
 
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -31,11 +30,25 @@ const FilterModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () =
   };
 
   const clearFilter = () => {
-    setSelectedPeriod("This week");
-    setSelectedStatus("Confirmed");
+    setSelectedCategorie('');
+    setSelectedType("Confirmed");
     setStartDate(new Date());
     setEndDate(new Date());
   };
+
+  const handleSelectedCategorie = (categorie : string) => {
+    if(categorie === selectedCategorie)
+      setSelectedCategorie('');
+    else
+      setSelectedCategorie(categorie);
+  }
+
+  const handleSelectedType = (type : string) => {
+    if(type === selectedType)
+      setSelectedType('');
+    else
+      setSelectedType(type);
+  }
 
   return (
     <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose}>
@@ -57,7 +70,7 @@ const FilterModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () =
                 <TouchableOpacity
                   key={Categorie}
                   style={[styles.filterButton, selectedCategorie === Categorie && styles.selected]}
-                  onPress={() => setSelectedCategorie(Categorie)}
+                  onPress={() => handleSelectedCategorie(Categorie)}
                 >
                   <Text style={[styles.filterText, selectedCategorie === Categorie && styles.selectedText]}>{Categorie}</Text>
                 </TouchableOpacity>
@@ -93,17 +106,17 @@ const FilterModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () =
             onCancel={hideEndPicker}
           />
 
-          {/* Status Selection */}
+          {/* Type Selection */}
           <View style={styles.periodContainer}>
-            <Text style={styles.sectionTitle}>Status</Text>
-            <View style={styles.row}>
-              {["Confirmed", "Pending", "Canceled"].map((status) => (
+            <Text style={styles.sectionTitle}>Type</Text>
+            <View style={styles.rowBottom}>
+              {["Processing", "Send", "Get"].map((Type) => (
                 <TouchableOpacity
-                  key={status}
-                  style={[styles.filterButton, selectedStatus === status && styles.selected]}
-                  onPress={() => setSelectedStatus(status)}
+                  key={Type}
+                  style={[styles.typeButton, selectedType === Type && styles.selected]}
+                  onPress={() => handleSelectedType(Type)}
                 >
-                  <Text style={[styles.filterText, selectedStatus === status && styles.selectedText]}>{status}</Text>
+                  <Text style={[styles.filterText, selectedType === Type && styles.selectedText]}>{Type}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -139,9 +152,19 @@ const styles = StyleSheet.create({
   clearText: {fontSize: 16, fontWeight: "bold", color: "#87CEFA"},
   sectionTitle: { fontSize: 16, fontWeight: "bold", alignSelf: "flex-start"},
   row: { flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start"},
+  rowBottom: { flexDirection: "row", flexWrap: "wrap", justifyContent: 'space-evenly'},
   filterButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: 'rgba(65, 68, 65, 0.15)',
+    margin: 5,
+  },
+  typeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
     borderRadius: 10,
     backgroundColor: "white",
     borderWidth: 1,

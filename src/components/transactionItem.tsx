@@ -1,51 +1,92 @@
 import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet, Image} from "react-native";
+import Transaction from "../model/Transaction.model";
+import Icon from "react-native-vector-icons/FontAwesome";
 
-type Transaction = {
-    id: string;
-    type: string;
-    amount: number;
-    status: string;
-    date: string;
-    time: string;
-};
-    
 
 const TransactionItem = ({transaction, onPress} : {transaction: Transaction, onPress: () => void }) => {
+
+  const getTransactionicon = (categorie : string) => {
+    switch (categorie) {
+      case "Giải trí":
+        return "film";
+      case "Mua sắm":
+        return "shopping-cart";
+      case "Di chuyển":
+        return "car";
+      case "Sức khỏe":
+        return "heartbeat";
+      default:
+        return "question";
+    }
+  };
+
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "pending":
+      case "Unknown":
         return styles.pending;
-      case "confirmed":
+      case "Nhận":
         return styles.confirmed;
-      case "canceled":
+      case "Gửi":
         return styles.canceled;
       default:
         return {};
     }
   }
 
+
+
+  const formatDate = (date: Date) => {
+    const formattedDate = date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }); 
+  
+    return formattedDate;
+  };
+
+  const formatTime = (date: Date) => {
+    const formattedTime = date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, 
+    });
+  
+    return formattedTime;
+  };
+
+  const truncateText = (text: string, maxLength = 19) => {
+    if (!text) return ""; 
+    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+  };
+
+  const amountFormat = (text : string) => {
+    let formattedValue = Number(text).toLocaleString() ;
+    return formattedValue + " VND";
+};
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       {/* Icon Bên Trái */}
       <View style={styles.iconContainer}>
-        <Image source={require("../assets/icon.png")} style={styles.icon} />
+        <Icon name={getTransactionicon(transaction.category)} size={24} color='white'/>
       </View>
 
       {/* Nội dung */}
       <View style={styles.content}>
-        <Text style={styles.title}>{transaction.type}</Text>
-        <Text style={styles.subTitle}>Transaction ID</Text>
-        <Text style={styles.transactionId}>{transaction.id}</Text>
+        <Text style={styles.title}>{truncateText(transaction.description)}</Text>
+        <View style={styles.gap}></View>
+        <Text style={styles.subTitle}>Transaction Partner</Text>
+        <Text style={styles.transactionId}>{transaction.partner}</Text>
       </View>
 
       {/* Số tiền & Trạng thái */}
       <View style={styles.amountContainer}>
-        <Text style={styles.amount}>${transaction.amount.toFixed(2)}</Text>
-        <Text style={[styles.status, getStatusStyle(transaction.status)]}>
-          {transaction.status}    
+        <Text style={styles.amount}>{amountFormat(transaction.amount)}</Text>
+        <Text style={[styles.status, getStatusStyle(transaction.type)]}>
+          {transaction.type}    
         </Text>
-        <Text style={styles.date}>{transaction.date} {transaction.time}</Text>
+        <Text style={styles.date}> {formatDate(transaction.createdAt)} {formatTime(transaction.createdAt)}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -72,7 +113,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 50,
     height: 50,
-    backgroundColor: "#D7E3FC",
+    backgroundColor: "rgba(121, 145, 243, 0.5)",
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
@@ -86,12 +127,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 15,
   },
+  gap:{flex : 1},
   title: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#1B1B1B",
   },
   subTitle: {
+    marginTop: 10,
     fontSize: 12,
     color: "#A0A0A0",
   },
