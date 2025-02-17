@@ -2,12 +2,21 @@ import React, { useState, useRef } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 
-const FilterModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () => void }) => {
-  const [selectedCategorie, setSelectedCategorie] = useState("");
-  const [selectedType, setSelectedType] = useState("");
+interface FilterModalProps {
+  isVisible: boolean,
+  onClose: () => void,
+  category: string,
+  type: string,
+  startDate_: Date,
+  endDate_: Date,
+}
 
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+const FilterModal = ({ isVisible, onClose, category, type, startDate_, endDate_}: FilterModalProps) => {
+  const [selectedCategorie, setSelectedCategorie] = useState(category);
+  const [selectedType, setSelectedType] = useState(type);
+
+  const [startDate, setStartDate] = useState(startDate_);
+  const [endDate, setEndDate] = useState(endDate_);
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
 
@@ -31,7 +40,7 @@ const FilterModal = ({ isVisible, onClose }: { isVisible: boolean; onClose: () =
 
   const clearFilter = () => {
     setSelectedCategorie('');
-    setSelectedType("Confirmed");
+    setSelectedType("");
     setStartDate(new Date());
     setEndDate(new Date());
   };

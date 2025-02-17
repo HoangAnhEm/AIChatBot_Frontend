@@ -138,7 +138,6 @@ const applyTimeRange = async (timeRange : string) => {
       break;
     default:
       console.log("How da fuk??????")
-      startDate = endDate = null;
   }
   const formatDate = (date: Date) => date ? date.toISOString() : '';
 
