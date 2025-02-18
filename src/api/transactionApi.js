@@ -3,8 +3,8 @@ import Transaction from "../model/Transaction.model"
 
 const API_BASE_URL = "http://10.0.2.2:3000/expense"; 
 
-const access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjIzNzkxNDk3NmRjMmY0OGJhMTk2YSIsIm5hbWUiOiJ0dWFuX3Rlc3QiLCJlbWFpbCI6InR1YW5fdGVzdEBnbWFpbC5jb20iLCJpYXQiOjE3Mzk3MzI4ODIsImV4cCI6MTczOTczMzc4Mn0.jpEYA7uLZAEeiwOPRhsV9UewDJWpz9EV_GQ-xT8MmCs";
-const refresh_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjIzNzkxNDk3NmRjMmY0OGJhMTk2YSIsIm5hbWUiOiJ0dWFuX3Rlc3QiLCJlbWFpbCI6InR1YW5fdGVzdEBnbWFpbC5jb20iLCJpYXQiOjE3Mzk3MzI4ODIsImV4cCI6MTc0MDMzNzY4Mn0._kFO09-HRdPsUKoHNwLr9wPhYd1Z_BPSq39hvDbRuj8";
+const access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjIzNzkxNDk3NmRjMmY0OGJhMTk2YSIsIm5hbWUiOiJ0dWFuX3Rlc3QiLCJlbWFpbCI6InR1YW5fdGVzdEBnbWFpbC5jb20iLCJpYXQiOjE3Mzk5MDY2MjIsImV4cCI6MTczOTkwNzUyMn0.qUd75I0W7Bkzx7dopcMs6YTB9Lmao2smXSwuJTwVz8w";
+const refresh_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YjIzNzkxNDk3NmRjMmY0OGJhMTk2YSIsIm5hbWUiOiJ0dWFuX3Rlc3QiLCJlbWFpbCI6InR1YW5fdGVzdEBnbWFpbC5jb20iLCJpYXQiOjE3Mzk5MDY2MjIsImV4cCI6MTc0MDUxMTQyMn0.m50Tz-cry8rjzM__CvdOAD0_yKwCKQz8p2ak-vBlB54";
 
 const headers = {
   'Content-Type': 'application/json',
@@ -44,15 +44,22 @@ export const getTransactions = async ({ category, type, searchText, startDate, e
   }
 };
 
-export const updateTransaction = async (transactionId, updatedData) => {
+export const updateTransaction = async ({expenseId, updateData}) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/transactions/${transactionId}`, updatedData);
-    return response.data;
+    const response = await axios.patch(
+      `${API_BASE_URL}/${expenseId}`, 
+      updateData, 
+      {headers: headers}
+    );
+    return response.data; 
   } catch (error) {
-    console.error("Lỗi khi cập nhật giao dịch:", error);
-    throw error;
+    console.error("Lỗi khi cập nhật expense:", error);
+    return false;
   }
 };
+
+
+
 
 export const deleteTransaction = async (transactionId) => {
   try {

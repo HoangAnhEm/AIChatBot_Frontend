@@ -1,38 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, TextInput, ActivityIndicator } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import TransactionItem from "../components/transactionItem";
 import Icon from "react-native-vector-icons/Feather";
+import Icons from "react-native-vector-icons/MaterialIcons"; 
+import IconFA from 'react-native-vector-icons/FontAwesome';
 
 import TimeSelect from "../components/timeSelectButton"
 import FilterModal from "../components/filterModal";
-import TransferEditModal from "../components/transferEdit";
-import {getTransactions} from "../api/transactionApi"
+import TransferEditModal from "../components/transferEditModal";
+import {getTransactions, updateTransaction} from "../api/transactionApi"
 import Transaction from "../model/Transaction.model";
+import SearchBar from "../components/searchBar"
 
-
-// const transactions = [
-//   { id: "1", type: "Cash-in", amount: 100.0, status: "confirmed", date: "17 Sep 2023", time: "10:34 AM" },
-//   { id: "2", type: "Cashback from purchase", amount: 1.75, status: "confirmed", date: "16 Sep 2023", time: "16:08 PM" },
-//   { id: "3", type: "Transfer to card", amount: 9000.0, status: "pending", date: "16 Sep 2023", time: "11:21 AM" },
-//   { id: "4", type: "Transfer to card", amount: 9267.0, status: "canceled", date: "15 Sep 2023", time: "10:11 AM" },
-//   { id: "5", type: "Cashback from purchase", amount: 3.21, status: "confirmed", date: "14 Sep 2023", time: "18:59 PM" },
-//   { id: "6", type: "Online Payment", amount: 250.0, status: "confirmed", date: "13 Sep 2023", time: "09:45 AM" },
-//   { id: "7", type: "Subscription", amount: 9.99, status: "pending", date: "12 Sep 2023", time: "12:30 PM" },
-//   { id: "8", type: "Transfer to wallet", amount: 500.0, status: "confirmed", date: "11 Sep 2023", time: "14:20 PM" },
-//   { id: "9", type: "Refund", amount: 20.5, status: "confirmed", date: "10 Sep 2023", time: "17:45 PM" },
-//   { id: "10", type: "Bank Transfer", amount: 750.0, status: "canceled", date: "09 Sep 2023", time: "08:10 AM" },
-//   { id: "11", type: "Transfer to card", amount: 2000.0, status: "pending", date: "08 Sep 2023", time: "15:25 PM" },
-//   { id: "12", type: "Cash-in", amount: 500.0, status: "confirmed", date: "07 Sep 2023", time: "09:00 AM" },
-//   { id: "13", type: "Online Purchase", amount: 99.99, status: "confirmed", date: "06 Sep 2023", time: "19:30 PM" },
-//   { id: "14", type: "Bill Payment", amount: 120.0, status: "canceled", date: "05 Sep 2023", time: "16:15 PM" },
-//   { id: "15", type: "Transfer to wallet", amount: 300.0, status: "pending", date: "04 Sep 2023", time: "11:50 AM" },
-//   { id: "16", type: "Cashback from purchase", amount: 2.75, status: "confirmed", date: "03 Sep 2023", time: "21:45 PM" },
-//   { id: "17", type: "Online Payment", amount: 199.99, status: "confirmed", date: "02 Sep 2023", time: "14:10 PM" },
-//   { id: "18", type: "Refund", amount: 50.0, status: "canceled", date: "01 Sep 2023", time: "10:55 AM" },
-//   { id: "19", type: "Subscription", amount: 4.99, status: "pending", date: "31 Aug 2023", time: "23:59 PM" },
-//   { id: "20", type: "Bank Transfer", amount: 1500.0, status: "confirmed", date: "30 Aug 2023", time: "07:30 AM" }
-// ];
 
 
 const wallets = [
@@ -40,56 +20,30 @@ const wallets = [
     { label: "💳  Wallet number 2"},
     { label: "💳  Wallet number 3"},
   ];
-
   
 
 const TransactionsScreen = () => {
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState(null);
   const [isEditModalVisible, setEditModalVisible] = useState(false);
-  const [selectedTrans, setSelectedTrans] = useState(0);
+  const [isSearching, setIsSearching] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [selectedTransIndex, setSelectedTransIndex] = useState(0);
+  const [selectedPeriod, setSelectedPeriod] = useState('');
 
   const [category, setCategory] = useState('');
   const [searchText, setSearchText] = useState('');
   const [type, setType] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
 
-//   interface fetchDataParams {
-//     category: string,
-//     searchText: string,
-//     type: string,
-//     startDate: string,
-//     endDate: string,
-//     page: number,
-//     pageSize: number,
-//   }
 
-//   const fetchData = async ({category, searchText, type, startDate, endDate, page, pageSize} : fetchDataParams) => {
-//     try {
-//         const data = await getTransactions({
-//           category: category,
-//           searchText: searchText,
-//           type: type,
-//           startDate: startDate,
-//           endDate: endDate,
-//           page: page,
-//           pageSize: pageSize,
-//         });
-//         setTransactions(data);
-//     } catch (error) {
-//         console.error("Lỗi khi lấy giao dịch:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-// };
-
-
+const formatDate = (date: Date) => date ? date.toISOString() : '';
 
 useEffect(() => {
   const fetchData = async () => {
@@ -99,8 +53,8 @@ useEffect(() => {
         category: category,
         searchText: searchText,
         type: type,
-        startDate: startDate,
-        endDate: endDate,
+        startDate: startDate === undefined ? '' : formatDate(startDate as Date),
+        endDate: endDate === undefined ? '' : formatDate(endDate as Date),
         page: page,
         pageSize: pageSize,
       });
@@ -114,6 +68,7 @@ useEffect(() => {
 
   fetchData();
 },[category, searchText, type, startDate, endDate, page, pageSize]);
+
 
 const applyTimeRange = async (timeRange : string) => {
   let startDate, endDate;
@@ -139,30 +94,92 @@ const applyTimeRange = async (timeRange : string) => {
     default:
       console.log("How da fuk??????")
   }
-  const formatDate = (date: Date) => date ? date.toISOString() : '';
 
-  setStartDate(formatDate(startDate as Date)); 
-  setEndDate(formatDate(endDate as Date)); 
+  setStartDate(startDate); 
+  setEndDate(endDate); 
 };
+
+
+const handlePeriodSelect = (period : string) => {
+  
+  if(period === selectedPeriod){
+    applyTimeRange(period);
+    setSelectedPeriod('');
+    return false
+  }
+  else{
+    applyTimeRange(period);
+    setSelectedPeriod(period);
+    return true;
+  }
+}
+
+const handleFilter = (category_ : string, type_ : string, startDate_ : Date | undefined, endDate_ : Date | undefined) => {
+  setCategory(category_);
+  setType(type_);
+  setStartDate(startDate_);
+  setEndDate(endDate_);
+}
+
+const handleTransUpdate = async(category_: string, description_: string, amount_: number) => {
+  const res = await updateTransaction({
+    expenseId: transactions[selectedTransIndex].id,
+    updateData: {
+      amount: amount_, 
+      description: description_, 
+      category: category_
+    },
+  })
+
+  if (!res)
+    return
+
+
+  setTransactions(prevTransactions => {
+      const newTransactions = [...prevTransactions]; 
+      newTransactions[selectedTransIndex] = { 
+          ...newTransactions[selectedTransIndex], 
+          amount: amount_, 
+          description: description_, 
+          category: category_
+      }; 
+      return newTransactions; 
+  });
+};
+
+const handleSeacch = (searchText_ : string) => {
+  setSearchText(searchText_)
+}
+
 
 
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-          <Dropdown
-          style={styles.dropdown}
-          data={wallets}
-          labelField="label"
-          valueField="label"
-          placeholder="Categories"
-          placeholderStyle={styles.placeholderText} 
-          value={selectedWallet}
-          onChange={(item) => setSelectedWallet(item.label)}
-          />
+          {isSearching ? 
+            <SearchBar handleSearch={handleSeacch}/>
+            :
+            <Dropdown
+            style={styles.dropdown}
+            data={wallets}
+            labelField="label"
+            valueField="label"
+            placeholder="Wallets"
+            placeholderStyle={styles.placeholderText} 
+            value={selectedWallet}
+            onChange={(item) => setSelectedWallet(item.label)}
+            />
+          }
 
-        <TouchableOpacity style={styles.iconButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => {setIsSearching(!isSearching)}}>
+          {isSearching ? 
+          <View>
+            <Text>X</Text>
+          </View>
+          :
           <Icon name="search" size={17} color="black" />
+          }
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => {setFilterVisible(true)}}>
           <Text>⋮</Text>
@@ -170,20 +187,32 @@ const applyTimeRange = async (timeRange : string) => {
       </View>
       <View style={styles.timeSelectContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.timeScrollView}>
-          <TimeSelect label= "This Week" onPress={() => {applyTimeRange("This Week")}}/>
-          <TimeSelect label= "Last Week" onPress={() => {applyTimeRange("Last Week")}}/>
-          <TimeSelect label= "This Month" onPress={() => {applyTimeRange("This Month")}}/>
-          <TimeSelect label= "Last Month" onPress={() => {applyTimeRange("Last Month")}}/>
+          <TimeSelect label="This Week" onPress={handlePeriodSelect} isSelected={selectedPeriod === 'This Week'} />
+          <TimeSelect label="Last Week" onPress={handlePeriodSelect} isSelected={selectedPeriod === 'Last Week'} />
+          <TimeSelect label="This Month" onPress={handlePeriodSelect} isSelected={selectedPeriod === 'This Month'} />
+          <TimeSelect label="Last Month" onPress={handlePeriodSelect} isSelected={selectedPeriod === 'Last Month'} />
         </ScrollView>
       </View>
 
+
       {/* Danh sách giao dịch */}
       <View style={styles.transactionsLog}>
-        <FlatList
-          data={transactions}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item }) => <TransactionItem transaction = {item} onPress={() => {setEditModalVisible(true)}}/>}
-        />
+        {loading ? 
+          <ActivityIndicator size='large' color="#3498db" style={[styles.loading, { transform: [{ scale: 2 }] }]}/>
+          :
+          transactions.length === 0 ?
+            <View  style={styles.emptyContainer}> 
+              <Icons style={styles.emptyIcon} name="search-off" size={60} color="#888" /> 
+                <Text style={styles.emptyWarnTitle}>No matching transactions found!</Text>
+                <Text style={styles.emptyWarn}>Try a different keyword or adjust the filters.</Text>
+            </View>
+            :
+            <FlatList
+              data={transactions}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({ item, index }) => <TransactionItem transaction = {item} onPress={() => {setSelectedTransIndex(index), setEditModalVisible(true)}}/>}
+            />
+        }
       </View>
 
       {/* Nút Floating Button */}
@@ -192,8 +221,10 @@ const applyTimeRange = async (timeRange : string) => {
       </TouchableOpacity> */}
 
       {/* Pop Up Filter */}
-      <FilterModal isVisible={isFilterVisible} onClose={() => setFilterVisible(false)} />
-      {!loading && <TransferEditModal visible={isEditModalVisible} onClose={() => setEditModalVisible(false)} transactionInfo={transactions[selectedTrans]}/>}
+      <FilterModal isVisible={isFilterVisible} category={category} type={type} 
+                    startDate_={startDate} endDate_={endDate} confifm={handleFilter} close={() =>setFilterVisible(false)}/>
+      {!loading && <TransferEditModal key={selectedTransIndex} visible={isEditModalVisible} updateConfirm={handleTransUpdate} 
+                                      transactionInfo={transactions[selectedTransIndex]} close={() => setEditModalVisible(false)}/>}
     </SafeAreaView>
   );
 };
@@ -215,6 +246,7 @@ const styles = StyleSheet.create({
   },
   transactionsLog:{
     paddingHorizontal: 20,
+    height: '70%'
   },
   placeholderText: {color: 'white', fontWeight: 'bold', fontSize: 17},
   // floatingButton: {
@@ -235,6 +267,11 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
+  emptyContainer: {flex: 1},
+  emptyIcon: {alignSelf: 'center', marginTop: '30%'},
+  emptyWarnTitle: {alignSelf: 'center', fontSize: 18, fontWeight: 'bold'},
+  emptyWarn: {alignSelf: 'center', fontSize: 16},
+  loading: {alignSelf: "center", marginTop: '30%'}
 });
 
 export default TransactionsScreen;

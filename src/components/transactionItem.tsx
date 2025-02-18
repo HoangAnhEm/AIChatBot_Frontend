@@ -82,7 +82,7 @@ const TransactionItem = ({transaction, onPress} : {transaction: Transaction, onP
 
       {/* Số tiền & Trạng thái */}
       <View style={styles.amountContainer}>
-        <Text style={styles.amount}>{amountFormat(transaction.amount)}</Text>
+        <Text style={styles.amount}>{transaction.type === 'Nhận' ? `+${amountFormat(transaction.amount)}` : `-${amountFormat(transaction.amount)}`}</Text>
         <Text style={[styles.status, getStatusStyle(transaction.type)]}>
           {transaction.type}    
         </Text>

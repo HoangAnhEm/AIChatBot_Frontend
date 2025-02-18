@@ -1,32 +1,50 @@
-import React, { useState } from "react";
-import { View, TouchableOpacity, Button, Text, StyleSheet } from "react-native";
-import { createTransactions } from "../api/transactionApi";
-import { createMultipleTransactions } from "./dev2";
+import React, { useRef, useEffect } from "react";
+import { View, Animated, StyleSheet, Easing } from "react-native";
 
-const AddTransactionScreen = () => {
-  const handleAddTransaction = async () => {
-    // const res = await createMultipleTransactions();
+const MovingDot = () => {
+  const translateX = useRef(new Animated.Value(0)).current;
 
-    // console.log(res);
-  };
+  useEffect(() => {
+    const moveDot = () => {
+      translateX.setValue(0);
+      Animated.timing(translateX, {
+        toValue: 300, // Chiều dài đường chạy của chấm
+        duration: 1000, // Thời gian chạy hết đường
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }).start(() => moveDot()); // Lặp vô hạn
+    };
+    moveDot();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.operationButton} onPress={handleAddTransaction}>
-          <Text style={styles.text}>BUTTON</Text>
-      </TouchableOpacity>
+      <View style={styles.line} />
+      <Animated.View style={[styles.dot, { transform: [{ translateX }] }]} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
-    backgroundColor: '#fff',
-    flex: 1,
+    width: 300,
+    height: 10,
+    justifyContent: "center",
+    overflow: "hidden",
   },
-  operationButton: {backgroundColor: '#BEC1EB', borderRadius: 10, alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 15 , marginRight: 10},
-  text: {color: 'white'},
+  line: {
+    width: "100%",
+    height: 2,
+    backgroundColor: "white",
+    position: "absolute",
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    backgroundColor: "black",
+    borderRadius: 5,
+    position: "absolute",
+  },
 });
 
-export default AddTransactionScreen;
+export default MovingDot;

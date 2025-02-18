@@ -7,7 +7,12 @@ import Transaction from "../model/Transaction.model";
 
 interface TransferEditModalProps {
   visible: boolean;
-  onClose: () => void;
+  updateConfirm: (
+    category_: string, 
+    description_: string,
+    amount_: number
+  ) => void;
+  close: () => void;
   transactionInfo: Transaction;
 }
 
@@ -19,7 +24,7 @@ const categories = [
   { label: "Health & Wellness", value: "Sức khỏe" },
 ];
 
-const TransferEditModal = ({visible, onClose, transactionInfo }: TransferEditModalProps) => {
+const TransferEditModal = ({visible, updateConfirm, transactionInfo, close }: TransferEditModalProps) => {
     if(transactionInfo === undefined)
         return <Text></Text>;
       
@@ -39,7 +44,8 @@ const TransferEditModal = ({visible, onClose, transactionInfo }: TransferEditMod
     };
 
     const handleProceed = () => {
-        onClose()
+        updateConfirm(categorie, description, Number(transaction.replace(/\D/g, "")));
+        close()
       };
 
     const truncateText = (text: string, maxLength = 7) => {
@@ -91,7 +97,12 @@ const TransferEditModal = ({visible, onClose, transactionInfo }: TransferEditMod
             />
 
             <TouchableOpacity style={styles.proceedButton} onPress={() => {handleProceed()}}>
-            <Text style={styles.proceedText}>Proceed</Text>
+              <Text style={styles.proceedText}>Proceed</Text>
+            </TouchableOpacity>
+
+            
+            <TouchableOpacity style={styles.proceedButton} onPress={close}>
+              <Text style={styles.proceedText}>Cancel</Text>
             </TouchableOpacity>
         </View>
     </View>

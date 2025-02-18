@@ -4,19 +4,27 @@ import DateTimePickerModal from "react-native-modal-datetime-picker"
 
 interface FilterModalProps {
   isVisible: boolean,
-  onClose: () => void,
   category: string,
   type: string,
-  startDate_: Date,
-  endDate_: Date,
+  startDate_: Date | undefined,
+  endDate_: Date | undefined,
+  close: () => void,
+  confifm: (
+    category: string,
+    type: string,
+    startDate_: Date | undefined,
+    endDate_: Date | undefined,
+  ) => void
 }
 
-const FilterModal = ({ isVisible, onClose, category, type, startDate_, endDate_}: FilterModalProps) => {
+const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confifm, close}: FilterModalProps) => {
+  const [isTimeRangeValid, setIsTimeRangeValid] = useState(true);
+
   const [selectedCategorie, setSelectedCategorie] = useState(category);
   const [selectedType, setSelectedType] = useState(type);
 
-  const [startDate, setStartDate] = useState(startDate_);
-  const [endDate, setEndDate] = useState(endDate_);
+  const [startDate, setStartDate] = useState<Date | undefined>(startDate_);
+  const [endDate, setEndDate] = useState<Date | undefined>(endDate_);
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
 
@@ -25,8 +33,8 @@ const FilterModal = ({ isVisible, onClose, category, type, startDate_, endDate_}
   };
 
   const handleStartConfirm = (date: Date) => {
-    setStartDate(date);
     hideStartPicker();
+    setStartDate(date);
   };
 
   const hideEndPicker = () => {
@@ -34,15 +42,27 @@ const FilterModal = ({ isVisible, onClose, category, type, startDate_, endDate_}
   };
 
   const handleEndConfirm = (date: Date) => {
-    setEndDate(date);
     hideEndPicker();
+    setEndDate(date);
   };
 
   const clearFilter = () => {
     setSelectedCategorie('');
     setSelectedType("");
-    setStartDate(new Date());
-    setEndDate(new Date());
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setIsTimeRangeValid(true)
+  };
+  const categories = [
+    { label: "Entertainment ", value: "Giải trí" },
+    { label: "Shopping ", value: "Mua sắm" },
+    { label: "Transportation ", value: "Di chuyển" },
+    { label: "Health & Wellness", value: "Sức khỏe" },
+  ];
+
+  const getCategoryValue = (label: string) => {
+    const category = categories.find(cat => cat.label.trim() === label.trim());
+    return category ? category.value : 'Khác';
   };
 
   const handleSelectedCategorie = (categorie : string) => {
@@ -59,8 +79,29 @@ const FilterModal = ({ isVisible, onClose, category, type, startDate_, endDate_}
       setSelectedType(type);
   }
 
+  const confirm_close = () => {
+    const categorie_V = getCategoryValue(selectedCategorie);
+    confifm(categorie_V, selectedType, startDate, endDate)
+    setIsTimeRangeValid(true)
+    close()
+  }
+
+  const handleConfirm = () => {
+    if (startDate && endDate){
+      if (startDate.getTime() < endDate.getTime()) {
+        confirm_close()
+        return
+      }
+    }
+    else{
+      confirm_close()
+      return
+    }
+    setIsTimeRangeValid(false)
+  }
+
   return (
-    <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           {/* Header */}
@@ -92,25 +133,29 @@ const FilterModal = ({ isVisible, onClose, category, type, startDate_, endDate_}
             <Text style={styles.sectionTitle}>Select period</Text>
             <View style={styles.datePickerRow}>
               <TouchableOpacity style={styles.filterButton} onPress={() => setShowStartPicker(true)}>
-                <Text style={styles.dateText}>📅 {startDate.toLocaleDateString("vi-VN")}</Text>
+                <Text style={styles.dateText}>📅 {startDate === undefined ? 'From' : startDate.toLocaleDateString("vi-VN")}</Text>
               </TouchableOpacity>
               <Text style={styles.toText}> - </Text>
               <TouchableOpacity style={styles.filterButton} onPress={() => setShowEndPicker(true)}>
-                <Text style={styles.dateText}>📅 {endDate.toLocaleDateString("vi-VN")}</Text>
+                <Text style={styles.dateText}>📅 {endDate === undefined ? 'To' : endDate.toLocaleDateString("vi-VN")}</Text>
               </TouchableOpacity>
             </View>
+
+            {!isTimeRangeValid && <Text style={styles.warning}> Invalid Period!! </Text>}
           </View>
 
           {/* Date Picker Modals */}
           <DateTimePickerModal
             isVisible={showStartPicker}
             mode="date"
+            date={startDate}
             onConfirm={handleStartConfirm}
             onCancel={hideStartPicker}
           />
           <DateTimePickerModal
             isVisible={showEndPicker}
             mode="date"
+            date={endDate}
             onConfirm={handleEndConfirm}
             onCancel={hideEndPicker}
           />
@@ -132,8 +177,12 @@ const FilterModal = ({ isVisible, onClose, category, type, startDate_, endDate_}
           </View>
 
           {/* Show Results Button */}
-          <TouchableOpacity style={styles.showResultsButton} onPress={onClose}>
+          <TouchableOpacity style={styles.showResultsButton} onPress={handleConfirm}>
             <Text style={styles.showResultsText}>Show results</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.showCancelButton} onPress={close}>
+            <Text style={styles.showCancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -162,6 +211,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: "bold", alignSelf: "flex-start"},
   row: { flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start"},
   rowBottom: { flexDirection: "row", flexWrap: "wrap", justifyContent: 'space-evenly'},
+  warning: {color: 'red', alignItems: 'center', alignSelf: 'center'},
   filterButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -203,9 +253,20 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: "center",
     width: "80%",
-    marginVertical: 20,
+    marginTop: 20,
   },
   showResultsText: { color: "white", fontSize: 16, fontWeight: "bold" },
+
+  showCancelButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 12,
+    borderRadius: 15,
+    alignItems: "center",
+    width: "80%",
+    marginBottom: 20,
+    marginTop: 10
+  },
+  showCancelText: { color: "white", fontSize: 16, fontWeight: "bold" },
 });
 
 export default FilterModal;

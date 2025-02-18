@@ -1,5 +1,6 @@
 class Transaction {
-    constructor({ amount, wallet, partner, type, category, description, createdAt }) {
+    constructor({ _id, amount, wallet, partner, type, category, description, createdAt }) {
+        this.id = _id;
         this.amount = amount;
         this.wallet = wallet;
         this.partner = partner;
