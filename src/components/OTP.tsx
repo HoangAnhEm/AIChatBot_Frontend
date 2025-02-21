@@ -1,85 +1,120 @@
-import React, { useState, useRef } from 'react';
-import { View, TextInput, StyleSheet, KeyboardAvoidingView } from 'react-native';
+// OTPInput.tsx
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { View, TextInput, StyleSheet, Platform } from 'react-native';
 
 interface OTPInputProps {
   length?: number;
   onComplete?: (otp: string) => void;
 }
 
-const OTPInput: React.FC<OTPInputProps> = ({ length = 4, onComplete }) => {
-  const [otp, setOtp] = useState<string[]>(Array(length).fill(''));
-  const inputRefs = useRef<(TextInput | null)[]>(Array(length).fill(null));
+// Define the methods that will be exposed
+export interface OTPInputHandle {
+  clear: () => void;
+}
 
-  const updateOTP = (value: string, index: number) => {
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
+const OTPInput = forwardRef<OTPInputHandle, OTPInputProps>(({ length = 4, onComplete }, ref) => {
+  const [otpArray, setOtpArray] = useState<string[]>(Array(length).fill(''));
+  const inputRefs = useRef<TextInput[]>([]);
+  const [focusedIndex, setFocusedIndex] = useState(0);
 
-    // Move focus or complete
-    if (value && index < length - 1) {
+  // Expose the clear method to parent components
+  useImperativeHandle(ref, () => ({
+    clear: () => {
+      setOtpArray(Array(length).fill(''));
+      setFocusedIndex(0);
+      inputRefs.current[0]?.focus();
+    }
+  }));
+
+  const handleTextChange = (text: string, index: number) => {
+    if (text && !/^\d+$/.test(text)) return;
+
+    const newOtpArray = [...otpArray];
+    newOtpArray[index] = text;
+    setOtpArray(newOtpArray);
+
+    if (text.length === 1 && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
+      setFocusedIndex(index + 1);
     }
 
-    const completedOTP = newOtp.join('');
-    if (completedOTP.length === length) {
-      onComplete?.(completedOTP);
+    const otpString = newOtpArray.join('');
+    if (otpString.length === length) {
+      onComplete?.(otpString);
     }
   };
 
-  const handleKeyPress = (event: any, index: number) => {
-    const { nativeEvent } = event;
-
-    if (nativeEvent.key === 'Backspace') {
-      // Clear current input or move back
-      if (otp[index] === '') {
-        if (index > 0) {
-          inputRefs.current[index - 1]?.focus();
-        }
-      } else {
-        updateOTP('', index);
-      }
+  const handleKeyPress = ({ nativeEvent: { key } }: any, index: number) => {
+    if (key === 'Backspace' && !otpArray[index] && index > 0) {
+      const newOtpArray = [...otpArray];
+      newOtpArray[index - 1] = '';
+      setOtpArray(newOtpArray);
+      inputRefs.current[index - 1]?.focus();
+      setFocusedIndex(index - 1);
     }
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
-      <View style={styles.boxContainer}>
-        {otp.map((digit, index) => (
-          <TextInput
-            key={index}
-            ref={el => inputRefs.current[index] = el}
-            style={styles.box}
-            keyboardType="number-pad"
-            maxLength={1}
-            value={digit}
-            onChangeText={(text) => updateOTP(text, index)}
-            onKeyPress={(event) => handleKeyPress(event, index)}
-            textAlign="center"
-            autoFocus={index === 0}
-          />
-        ))}
-      </View>
-    </KeyboardAvoidingView>
+    <View style={styles.container}>
+      {otpArray.map((digit, index) => (
+        <TextInput
+          key={index}
+          ref={ref => {
+            if (ref) inputRefs.current[index] = ref;
+          }}
+          style={[
+            styles.input,
+            focusedIndex === index && styles.focused,
+            digit && styles.filled
+          ]}
+          maxLength={1}
+          keyboardType="number-pad"
+          value={digit}
+          onChangeText={(text) => handleTextChange(text, index)}
+          onKeyPress={(e) => handleKeyPress(e, index)}
+          onFocus={() => setFocusedIndex(index)}
+          autoComplete="off"
+          textContentType="oneTimeCode"
+          importantForAutofill="no"
+          autoCorrect={false}
+          selectTextOnFocus
+          caretHidden
+        />
+      ))}
+    </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-  },
-  boxContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    alignItems: 'center',
+    padding: 20,
   },
-  box: {
+  input: {
     width: 50,
     height: 50,
-    borderWidth: 2,
-    borderColor: '#3498db',
-    marginHorizontal: 5,
+    borderWidth: 1.5,
+    borderColor: '#ccc',
     borderRadius: 8,
-    fontSize: 24,
+    fontSize: 20,
+    textAlign: 'center',
+    marginHorizontal: 5,
+    color: '#000',
+    backgroundColor: '#fff',
+    ...Platform.select({
+      android: {
+        padding: 0,
+      },
+    }),
+  },
+  focused: {
+    borderColor: '#3498db',
+    borderWidth: 2,
+  },
+  filled: {
+    backgroundColor: '#f8f9fa',
   },
 });
 

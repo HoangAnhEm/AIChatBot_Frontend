@@ -4,6 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 
 import { colors } from '../constants/colors';
 import backImage from '../assets/signup.png';
+import { Ionicons } from "@expo/vector-icons";
+import {registerUser} from "../services/authServices";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   Text,
@@ -22,57 +26,89 @@ const { height, width } = Dimensions.get('window');
 
 export default function SignUp() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const [username, setUsername] = useState('');
+    const [name, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const onHandleValidate = () => {
-            //Chua co backend
-        navigation.navigate('OTP') ;
+    const [email, setUserEmail] = useState('');
+    const [message, setMessage] = useState("");
+    const onHandleValidate = async() => {
+        try{
+            const userData = { name, email, password };
+            await AsyncStorage.setItem("email", email);
+            const result = await registerUser(userData);
+            setMessage(result ? "Registration Successful!" : "Failed to Register");
+//             await AsyncStorage.setItem('accessToken', result.accessToken);
+//             await AsyncStorage.setItem('refreshToken', email.refreshToken);
+            showAlert('message', message);
+            navigation.navigate('OTP',{ id: result.metadata.sessionId });
+            }
+        catch(error) {
+            console.error("Registration Error:", error);  // ✅ Log error details
+            setMessage("Registration failed! Check console for details.");
+            showAlert('message', message);
+            }
+        };
+    const showAlert = (title, message) => {
+          Alert.alert(
+            title,
+            message,
+            [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+            { cancelable: true }
+          );
         };
 
+
+
     return(
-        <View style={styles.container}>
-            <Image source={backImage} style={styles.backImage} />
-            <Text style={styles.title}>Sign up</Text>
-            <SafeAreaView style={styles.form}>
-                <Text style={styles.placeHolder}>Fill in these fields!!!</Text>
-                <TextInput
-                     style={styles.input}
-                     placeholder="username"
-                     autoCapitalize="none"
-                     autoFocus
-                     value={username}
-                     onChangeText={(text) => setUsername(text)}
-                />
-                <TextInput
-                     style={styles.input}
-                     placeholder="user-email"
-                     autoCapitalize="none"
-                     keyboardType="email-address"
-                     textContentType="emailAddress"
-                     autoFocus
-                     value={userEmail}
-                     onChangeText={(text) => setUserEmail(text)}
-                />
-                <TextInput
-                     style={styles.input}
-                     placeholder="password"
-                     autoCapitalize="none"
-                     autoCorrect={false}
-                     secureTextEntry
-                     textContentType="password"
-                     value={password}
-                     onChangeText={(text) => setPassword(text)}
-                />
-                <TouchableOpacity style={styles.button} onPress={onHandleValidate}>
-                     <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Create!!!</Text>
+        <>
+            <View style={styles.container}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                    <Text style={styles.backText}>Back</Text>
                 </TouchableOpacity>
-            </SafeAreaView>
-        </View>
+                <Image source={backImage} style={styles.backImage} />
+                <Text style={styles.title}>Sign up</Text>
+                <SafeAreaView style={styles.form}>
+                    <Text style={styles.placeHolder}>Fill in these fields!!!</Text>
+                    <TextInput
+                         style={styles.input}
+                         placeholder="username"
+                         autoCapitalize="none"
+                         autoFocus
+                         value={name}
+                         onChangeText={(text) => setUsername(text)}
+                    />
+                    <TextInput
+                         style={styles.input}
+                         placeholder="user-email"
+                         autoCapitalize="none"
+                         keyboardType="email-address"
+                         textContentType="emailAddress"
+                         autoFocus
+                         value={email}
+                         onChangeText={(text) => setUserEmail(text)}
+                    />
+                    <TextInput
+                         style={styles.input}
+                         placeholder="password"
+                         autoCapitalize="none"
+                         autoCorrect={false}
+                         secureTextEntry
+                         textContentType="password"
+                         value={password}
+                         onChangeText={(text) => setPassword(text)}
+                    />
+                    <TouchableOpacity style={styles.button} onPress={onHandleValidate}>
+                         <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Create!!!</Text>
+                    </TouchableOpacity>
+                </SafeAreaView>
+            </View>
+        </>
         );
     }
 const styles = StyleSheet.create({
+    header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingTop: 25 },
     container: {
+        justifyContent: 'flex-start',
         backgroundColor: '#fff',
         flex: 1,
         },
@@ -128,4 +164,19 @@ const styles = StyleSheet.create({
         marginTop: 15,
         padding: 12,
       },
+    backButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      position: "absolute",
+      top: 40, // Điều chỉnh nếu cần
+      //left: 20,
+      zIndex: 10, // Đảm bảo hiển thị trên các phần khác
+      padding: 10,
+      borderRadius: 8,
+    },
+    backText: {
+          fontSize: 16,
+          color: "black",
+          marginLeft: 5,
+        },
     });
