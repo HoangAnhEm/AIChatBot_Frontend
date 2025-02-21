@@ -54,6 +54,7 @@ const HomeScreen = () => {
         <View style={styles.operationsRow}>
             <FeatureButton label='New' icon={'exchange'} onPress={() => {navigation.navigate('NewTransferStack')}}/>
             <FeatureButton label='History' icon={'history'} onPress={() => {navigation.navigate('TransactionsScreen')}}/>
+            <FeatureButton label='Dev' icon={'history'} onPress={() => {navigation.navigate('DevScreen')}}/>
         </View>
 
         {/* Transactions */}

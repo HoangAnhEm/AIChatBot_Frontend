@@ -8,8 +8,10 @@ type RootStackParamList = {
     DevScreen2: undefined;
     DevScreen: undefined;
     Login: undefined;
+    CategoryScreen: undefined;
   };
 
 
 declare module "*.jpg"
 declare module "*.png"
+

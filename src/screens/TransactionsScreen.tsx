@@ -103,8 +103,9 @@ const applyTimeRange = async (timeRange : string) => {
 const handlePeriodSelect = (period : string) => {
   
   if(period === selectedPeriod){
-    applyTimeRange(period);
     setSelectedPeriod('');
+    setStartDate(undefined);
+    setEndDate(undefined);
     return false
   }
   else{
@@ -222,7 +223,7 @@ const handleSeacch = (searchText_ : string) => {
 
       {/* Pop Up Filter */}
       <FilterModal isVisible={isFilterVisible} category={category} type={type} 
-                    startDate_={startDate} endDate_={endDate} confifm={handleFilter} close={() =>setFilterVisible(false)}/>
+                    startDate_={startDate} endDate_={endDate} confirm={handleFilter} close={() =>setFilterVisible(false)}/>
       {!loading && <TransferEditModal key={selectedTransIndex} visible={isEditModalVisible} updateConfirm={handleTransUpdate} 
                                       transactionInfo={transactions[selectedTransIndex]} close={() => setEditModalVisible(false)}/>}
     </SafeAreaView>

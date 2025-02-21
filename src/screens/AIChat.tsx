@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, SafeAreaView, Image} from "react-native";
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/Feather";
 
 const initialMessages = [
@@ -11,8 +13,16 @@ const initialMessages = [
 ];
 
 const ChatScreen = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  
   const [messages, setMessages] = useState(initialMessages);
   const [inputText, setInputText] = useState("");
+
+  const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    flatListRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
 
   const handleSend = () => {
     if (inputText.trim()) {
@@ -23,9 +33,22 @@ const ChatScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeAreaView}>
+      {/* Header với nút Back */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => {navigation.goBack()}} style={styles.backButton}>
+          <Icon name="arrow-left" size={24} color="white" />
+        </TouchableOpacity>
+        <Image source={require("../assets/avatar.png")} style={styles.avatar} />
+        <View style={styles.detail}>
+          <Text style={styles.headerTitle}>AI Support</Text>
+          <Text style={styles.headerText}>Your Personal Ai Bla Bla</Text>
+        </View>
+      </View>
+
       {/* Danh sách tin nhắn */}
       <FlatList
+        ref={flatListRef}
         data={messages}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -35,8 +58,9 @@ const ChatScreen = () => {
             </Text>
           </View>
         )}
-        inverted // Để tin nhắn mới nhất ở cuối danh sách
-      />
+        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+        onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
+      />  
 
       {/* Ô nhập tin nhắn */}
       <View style={styles.inputContainer}>
@@ -50,12 +74,37 @@ const ChatScreen = () => {
           <Icon name="send" size={20} color="white" />
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#D9EDFC", padding: 10 },
+  safeAreaView: { flex: 1, backgroundColor: "#D9EDFC", padding: 10},
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#3DB8FF",
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    marginTop: 40,
+  },
+  backButton: {
+    padding: 5,
+    marginRight: 10,
+  },
+  avatar: { width: 40, height: 40, borderRadius: 20 },
+  detail: {marginLeft: 10},
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
+  },
+  headerText: {
+    fontSize: 16,
+    color: "white",
+  },
   messageBubble: {
     maxWidth: "75%",
     padding: 10,

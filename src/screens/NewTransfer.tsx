@@ -41,6 +41,7 @@ const NewTransferScreen = () => {
 
   const handleNewPartner = (name: string) => {
     const param = {
+        _id: "",
         amount: 0, 
         wallet: "", 
         partner: name, 

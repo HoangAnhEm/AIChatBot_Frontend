@@ -9,7 +9,7 @@ interface FilterModalProps {
   startDate_: Date | undefined,
   endDate_: Date | undefined,
   close: () => void,
-  confifm: (
+  confirm: (
     category: string,
     type: string,
     startDate_: Date | undefined,
@@ -17,7 +17,7 @@ interface FilterModalProps {
   ) => void
 }
 
-const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confifm, close}: FilterModalProps) => {
+const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confirm, close}: FilterModalProps) => {
   const [isTimeRangeValid, setIsTimeRangeValid] = useState(true);
 
   const [selectedCategorie, setSelectedCategorie] = useState(category);
@@ -62,7 +62,7 @@ const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confifm,
 
   const getCategoryValue = (label: string) => {
     const category = categories.find(cat => cat.label.trim() === label.trim());
-    return category ? category.value : 'Khác';
+    return category ? category.value : '';
   };
 
   const handleSelectedCategorie = (categorie : string) => {
@@ -81,7 +81,7 @@ const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confifm,
 
   const confirm_close = () => {
     const categorie_V = getCategoryValue(selectedCategorie);
-    confifm(categorie_V, selectedType, startDate, endDate)
+    confirm(categorie_V, selectedType, startDate, endDate)
     setIsTimeRangeValid(true)
     close()
   }
