@@ -30,6 +30,8 @@ export default function ValidateCodeScreen() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<RootStackParamList, 'OTP'>>();
     const[code, setCode] = useState('');
+    const [message, setMessage] = useState("");
+
     const getCode = async() => {
         try{
             const email = await AsyncStorage.getItem('email');
@@ -48,17 +50,38 @@ export default function ValidateCodeScreen() {
     const handleOTPComplete = async(otp: string) => {
         console.log('Completed OTP:', otp);
         try{
-
-            const email = await AsyncStorage.getItem('email');
-            const otpCode = otp;
             const sessionId = route.params.id;
-            console.log(sessionId);
-            console.log(email);
-            const data = {email,otpCode,sessionId};
-            const code = await verifyOTP(data, {'x-ssid': sessionId});
-            if(code.code == 201){
-                navigation.navigate('Login');
-            }
+            if(sessionId != 'null'){
+                const email = await AsyncStorage.getItem('email');
+                const otpCode = otp;
+
+                console.log(sessionId);
+                console.log(email);
+                const data = {email,otpCode,sessionId};
+                const code = await verifyOTP(data, {'x-ssid': sessionId});
+                if(code.code == 201){
+                    setMessage("Sign up successfully !!!");
+                    showAlert('message', message);
+                    navigation.navigate('Login');
+                    }
+                }
+            else{
+                const email = await AsyncStorage.getItem('email');
+                const otpCode = otp;
+                navigation.navigate('ConfirmPassword',{ 'otpCode': otpCode })
+                }
+//             const email = await AsyncStorage.getItem('email');
+//             const otpCode = otp;
+//             const sessionId = route.params.id;
+//             console.log(sessionId);
+//             console.log(email);
+//             const data = {email,otpCode,sessionId};
+//             const code = await verifyOTP(data, {'x-ssid': sessionId});
+//             if(code.code == 201){
+//                 setMessage("Sign up successfully !!!");
+//                 showAlert('message', message);
+//                 navigation.navigate('Login');
+//             }
         }
         catch(error){
             console.error("OTP Error:", error);

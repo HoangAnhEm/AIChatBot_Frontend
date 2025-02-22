@@ -35,11 +35,15 @@ export default function SignUp() {
             const userData = { name, email, password };
             await AsyncStorage.setItem("email", email);
             const result = await registerUser(userData);
-            setMessage(result ? "Registration Successful!" : "Failed to Register");
+            if(result.code == 400){
+                setMessage("This email has already been registerd !!!");
+                showAlert('message', message);
+                }
+            else if(result.code == 201){
+                navigation.navigate('OTP',{ id: result.metadata.sessionId });
+                }
 //             await AsyncStorage.setItem('accessToken', result.accessToken);
 //             await AsyncStorage.setItem('refreshToken', email.refreshToken);
-            showAlert('message', message);
-            navigation.navigate('OTP',{ id: result.metadata.sessionId });
             }
         catch(error) {
             console.error("Registration Error:", error);  // ✅ Log error details

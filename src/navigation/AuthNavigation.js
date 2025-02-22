@@ -5,6 +5,7 @@ import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import ForgotP from '../screens/ForgotPassword';
 import OTP from '../screens/OTPCode';
+import ConfirmP from '../screens/ConfirmPassword';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ export default function AuthStack() {
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="ForgotPassword" component={ForgotP} />
       <Stack.Screen name="OTP" component={OTP} />
+      <Stack.Screen name="ConfirmPassword" component={ConfirmP} />
     </Stack.Navigator>
   );
 }

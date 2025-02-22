@@ -37,3 +37,14 @@ export const verifyOTP = async (userData: any, headers: object = {}) => {
     throw error;
   }
 };
+
+export const forgotPassword = async (userData: any) => {
+  try{
+    const response = await ApiManager.post("v1/api/forgotPassword", userData);
+    return response.data;
+  } catch (error){
+    console.error("OTP Error:", error);
+    throw error;
+  }
+};
+

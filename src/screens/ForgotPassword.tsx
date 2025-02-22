@@ -4,6 +4,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 import { colors } from '../constants/colors';
 import backImage from '../assets/ts.png';
+import {forgotPassword} from "../services/authServices";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -27,9 +28,8 @@ export default function ForgotPassword() {
 
     const onHandleCheckP = async() =>{
         await AsyncStorage.setItem("email", email);
-        const email = await AsyncStorage.getItem('email');
-        navigation.navigate('OTP')
-        console.log('email:', email);
+        await forgotPassword({email});
+        navigation.navigate('OTP',{ id: 'null' })
         };
 
     const showAlert = (title, message) => {
@@ -61,7 +61,7 @@ export default function ForgotPassword() {
                      onChangeText={(text) => setEmail(text)}
                 />
                 <TouchableOpacity style={styles.button} onPress={onHandleCheckP}>
-                    <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Button!!!</Text>
+                    <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Reclaim!!!</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         </View>

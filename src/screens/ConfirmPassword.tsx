@@ -4,6 +4,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 import { colors } from '../constants/colors';
 import backImage from '../assets/ts.png';
+import {getOTP, verifyOTP} from "../services/authServices";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -20,15 +21,34 @@ import {
   Dimensions,
 } from 'react-native';
 
-export default function ForgotPassword() {
+export default function ConfirmPassword() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const route = useRoute<RouteProp<RootStackParamList, 'ForgotPassword'>>();
-    const[email, setEmail] = useState('');
+    const route = useRoute<RouteProp<RootStackParamList, 'ConfirmPassword'>>();
 
-    const onHandleCheckP = async() =>{
-        await AsyncStorage.setItem("email", email);
+    const[newPassword, setNewPassword] = useState('');
+    const[reNewPassword, setReNewPassword] = useState('');
+    const[message, setMessage] = useState('');
+
+
+    const onHandleConfirm = async() =>{
         const email = await AsyncStorage.getItem('email');
-        navigation.navigate('OTP')
+        const otpCode = route.params.otpCode;
+        const data = {email, otpCode, newPassword, reNewPassword}
+        try{
+            const result = await verifyOTP(data);
+            if(result.code == 400){
+                setMessage("password do not match or OTP is wrong !!!");
+                showAlert('message', message);
+                }
+            else if(result.code == 200){
+                setMessage("reset successfully !!!");
+                showAlert('message', message);
+                navigation.navigate('Login');
+                }
+            }
+        catch(error){
+            console.error("Confirm Error:", error);
+            }
         console.log('email:', email);
         };
 
@@ -44,23 +64,29 @@ export default function ForgotPassword() {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>
-                Reclaim password
+                Confirm password
             </Text>
             <Text style={styles.normalText}>
-                Click the button below and check email for OTP
+                Fill in the password field !!!
             </Text>
             <SafeAreaView style={styles.form}>
                 <TextInput
                      style={styles.input}
-                     placeholder="user-email"
+                     placeholder="new-password"
                      autoCapitalize="none"
-                     keyboardType="email-address"
-                     textContentType="emailAddress"
                      autoFocus
-                     value={email}
-                     onChangeText={(text) => setEmail(text)}
+                     value={newPassword}
+                     onChangeText={(text) => setNewPassword(text)}
                 />
-                <TouchableOpacity style={styles.button} onPress={onHandleCheckP}>
+                <TextInput
+                     style={styles.input}
+                     placeholder="renew-password"
+                     autoCapitalize="none"
+                     autoFocus
+                     value={reNewPassword}
+                     onChangeText={(text) => setReNewPassword(text)}
+                />
+                <TouchableOpacity style={styles.button} onPress={onHandleConfirm}>
                     <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Button!!!</Text>
                 </TouchableOpacity>
             </SafeAreaView>

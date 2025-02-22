@@ -37,10 +37,16 @@ export default function Test() {
         try{
             const userData = { email, password };
             const result = await loginUser(userData);
+            if(result.code = 200){
+                setMessage("Login Successful!");
+                showAlert('message', message);
+                }
+            else{
+                setMessage("Something went wrong !!!");
+                showAlert('message', message);
+                console.log("Server Response:", result);
+                }
 
-            setMessage(result ? "Login Successful!" : "Failed to Login");
-            showAlert('message', message);
-            console.log("Server Response:", response);
             }
         catch(error) {
             console.error("Login Error:", error);  //  Log error details
