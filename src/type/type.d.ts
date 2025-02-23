@@ -8,7 +8,7 @@ type RootStackParamList = {
     DevScreen2: undefined;
     DevScreen: undefined;
     Login: undefined;
-    CategoryScreen: undefined;
+    CategoryScreen: {category : string, type : string, year : number, month : number};
   };
 
 

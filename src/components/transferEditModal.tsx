@@ -33,15 +33,19 @@ const TransferEditModal = ({visible, updateConfirm, transactionInfo, close }: Tr
     const [description, setDescription] = useState(transactionInfo.description);
 
     const handleInputChange = (text : string) => {
-        let numericValue = text.replace(/\D/g, "");
-        
-        if (numericValue === "") {
-            settransaction("");
-            return;
-        }
-        let formattedValue = Number(numericValue).toLocaleString();
-        settransaction(formattedValue + " VND");
-    };
+      let numericValue
+      if(text.length < transaction.length)
+        numericValue = text.replace(/\D/g, "").slice(0, -1);
+      else
+        numericValue = text.replace(/\D/g, "");
+
+      if (numericValue === "") {
+          settransaction("");
+          return;
+      }
+      let formattedValue = Number(numericValue).toLocaleString();
+      settransaction(formattedValue + " VND");
+  };
 
     const handleProceed = () => {
         updateConfirm(categorie, description, Number(transaction.replace(/\D/g, "")));

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker"
 
@@ -27,6 +27,14 @@ const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confirm,
   const [endDate, setEndDate] = useState<Date | undefined>(endDate_);
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
+
+  useEffect(() => {
+    setStartDate(startDate_);
+  }, [startDate_]);
+  
+  useEffect(() => {
+    setEndDate(endDate_);
+  }, [endDate_]);
 
   const hideStartPicker = () => {
     setShowStartPicker(false);
@@ -65,12 +73,26 @@ const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confirm,
     return category ? category.value : '';
   };
 
+  const types = [
+    { label: "Processing ", value: "Xử lý" },
+    { label: "Send ", value: "Gửi" },
+    { label: "Get ", value: "Nhận" },
+  ];
+
+  const getTypeValue = (label: string) => {
+    const type = types.find(type => type.label.trim() === label.trim());
+    return type ? type.value : '';
+  };
+
+
   const handleSelectedCategorie = (categorie : string) => {
     if(categorie === selectedCategorie)
       setSelectedCategorie('');
     else
       setSelectedCategorie(categorie);
   }
+
+
 
   const handleSelectedType = (type : string) => {
     if(type === selectedType)
@@ -81,7 +103,8 @@ const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confirm,
 
   const confirm_close = () => {
     const categorie_V = getCategoryValue(selectedCategorie);
-    confirm(categorie_V, selectedType, startDate, endDate)
+    const type_V = getTypeValue(selectedType);
+    confirm(categorie_V, type_V, startDate, endDate)
     setIsTimeRangeValid(true)
     close()
   }

@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/Feather";
 
 const initialMessages = [
-  { id: "1", text: "Hello!", sender: "other" },
+  { id: "1", text: "Hello! How can i help you?", sender: "other" },
   { id: "2", text: "How your life is going?", sender: "other" },
   { id: "3", text: "Perfect!", sender: "me" },
   { id: "4", text: "What about you?", sender: "me" },
@@ -26,8 +26,11 @@ const ChatScreen = () => {
 
   const handleSend = () => {
     if (inputText.trim()) {
-      const newMessage = { id: Date.now().toString(), text: inputText, sender: "me" };
-      setMessages([...messages, newMessage]);
+      const timestamp = Date.now();
+      const newMessage = { id: timestamp.toString(), text: inputText, sender: "me" };
+      const newResponse = { id: (timestamp + Math.floor(Math.random() * 1000)).toString(), text: "Ăn nói xamlon", sender: "other" };
+      
+      setMessages([...messages, newMessage, newResponse]);
       setInputText("");
     }
   };

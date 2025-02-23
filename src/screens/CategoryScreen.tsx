@@ -1,25 +1,161 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BarChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
+import { useTransactions } from "../contexts/TransactionsStactisticContext";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { Ionicons } from '@expo/vector-icons';
+import { StackNavigationProp } from '@react-navigation/stack';
+import Transaction from "../model/Transaction.model";
+import { getTransactions, updateTransaction } from "../api/transactionApi";
+import TransferEditModal from "../components/transferEditModal";
 
 const { width } = Dimensions.get("window");
 
 const CategoryScreen = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'CategoryScreen'>>();
+  const classfiedTransactions = useTransactions().classfiedTransactions;
+  const {loadTransaction} = useTransactions();
+  const {updateTransactions} = useTransactions();
+
+  const {category, type, year, month} = route.params;
+
+  const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [selectedTransIndex, setSelectedTransIndex] = useState(-1);
+  const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState("Tất cả");
 
-  const transactions = [
-    { id: 1, date: "21/2/2025", name: "Chuyển tiền đến TRAN MANH KHAI (BIDV)", amount: -1000000 },
-    { id: 2, date: "19/2/2025", name: "Chuyển tiền đến NGUYEN DUY HAI LONG (TPBank)", amount: -50000 },
-  ];
+  const barChartData = useMemo(() => {
+    if (!classfiedTransactions || !year || !month) return { labels: [], datasets: [{ data: [] }] };
+  
+    const monthsData = Array.from({ length: 5 }, (_, i) => {
+      const month_ = month - i;
+      const year_ = year - (month_ <= 0 ? 1 : 0);
+      const adjustedMonth = month_ <= 0 ? month_ + 12 : month_; 
+  
+      const total = classfiedTransactions?.[year_]?.[adjustedMonth]?.[type]?.[category]?.total ?? 0;
+      return {
+        month: `${adjustedMonth}/${year_}`,
+        total: total
+      };
+    }).reverse();
+    const results = {
+      labels: monthsData.map((d) => d.month),
+      datasets: [{ data: monthsData.map((d) => d.total) }]
+    }
+
+    return results;
+  }, [classfiedTransactions]);
+  
+  
+  const formatDate = (date: Date) => date ? date.toISOString() : '';
+    interface Results {
+      year: number;
+      month: number;
+      type: string;
+      category: string;
+      trans: Transaction[];
+      total: number;
+    }
+    const fetchTransactionsByTypeAndCategory = async (type: string, category: string, year: number, month: number) : Promise<Results | undefined>=> {
+      if (!classfiedTransactions[year]?.[month]?.[type]?.[category]) {
+        // Tiếp tục chạy
+      } else if (!(classfiedTransactions[year][month][type][category].trans.length === 0)) {
+        return undefined; 
+      }
+
+      const StartDate = new Date(year, month - 1, 1);
+      const EndDate = new Date(year, month, 0);
+      
+      try {
+        const data = await getTransactions({
+          category: category,
+          searchText: '',
+          type: type,
+          startDate: formatDate(StartDate as Date),
+          endDate: formatDate(EndDate as Date),
+          page: 1,
+          pageSize: 100,
+        });
+        const totalValue = data.reduce((sum: number, transaction: Transaction) => sum + transaction.amount, 0);
+
+        const results = {
+          year: year,
+          month: month,
+          type: type,
+          category: category,
+          trans: data === undefined ? [] : data,
+          total: totalValue === undefined ? 0 : totalValue,
+        };
+        return results;
+      } catch (error) {
+        console.error(`Lỗi khi lấy giao dịch phân loại ${type} ${category}:`, error);
+      } finally{
+        // console.log(`xong giao dịch phân loại ${type} ${category} vao tgain ${month} / ${year}`);
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const typePromises = Array.from({ length: 5 }, (_, i) => {
+          const month_ = month - i;
+          const year_ = year - (month_ <= 0 ? 1 : 0);
+          const adjustedMonth = month_ <= 0 ? month_ + 12 : month_; 
+
+          return fetchTransactionsByTypeAndCategory(type, category, year_, adjustedMonth);
+        });
+        const typeResults = await Promise.all(typePromises);
+        loadTransaction(typeResults);
+      } catch (error) {
+        console.error("Lỗi khi lấy giao dịch:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      fetchData();
+    },[]);
+
+
+    const handleTransUpdate = async(category_: string, description_: string, amount_: number) => {
+      const res = await updateTransaction({
+        expenseId: classfiedTransactions[year][month][type][category].trans[selectedTransIndex].id,
+        updateData: {
+          amount: amount_, 
+          description: description_, 
+          category: category_
+        },
+      })
+    
+      if (!res)
+        return
+    
+    
+      updateTransactions(
+        year,
+        month,
+        type,
+        category,
+        category_,
+        selectedTransIndex,
+        amount_,
+        description_
+      )
+    };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} >
       {/* Tiêu đề */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
         <Text style={styles.title}>Giải trí</Text>
-        <Icon name="car" size={20} color="#555" />
       </View>
 
       {/* Biểu đồ */}
@@ -34,10 +170,7 @@ const CategoryScreen = () => {
         </View>
 
         <BarChart
-          data={{
-            labels: ["9", "10", "11", "1/2025", "2"],
-            datasets: [{ data: [298000, 400000, 600000, 800000, 1687999] }],
-          }}
+          data={barChartData}
           width={width - 40}
           height={200}
           yAxisLabel=""
@@ -82,19 +215,23 @@ const CategoryScreen = () => {
             </TouchableOpacity>
           ))}
         </View>
-
-        <FlatList
-          data={transactions}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.transactionItem}>
-              <Text style={styles.transactionDate}>{item.date}</Text>
-              <Text style={styles.transactionName}>{item.name}</Text>
+        
+        {<FlatList
+          data={classfiedTransactions[year]?.[month]?.[type]?.[category]?.trans ?? []}
+          keyExtractor={(_, index) => index.toString()} 
+          renderItem={({ item , index}) => (
+            <TouchableOpacity style={styles.transactionItem} onPress={() => {setSelectedTransIndex(index), setEditModalVisible(true)}}>
+              <Text style={styles.transactionDate}>{item.createdAt.toISOString()}</Text>
+              <Text style={styles.transactionName}>{item.description}</Text>
               <Text style={styles.transactionAmount}>{item.amount.toLocaleString()}đ</Text>
-            </View>
+            </TouchableOpacity>
           )}
-        />
+        />}
       </View>
+
+      {!loading && <TransferEditModal key={selectedTransIndex} visible={isEditModalVisible} updateConfirm={handleTransUpdate} 
+                                      transactionInfo={classfiedTransactions[year]?.[month]?.[type]?.[category]?.trans[selectedTransIndex] ?? undefined} 
+                                      close={() => setEditModalVisible(false)}/>}
     </View>
   );
 };
@@ -107,8 +244,9 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    gap: 5,
+    marginTop: 30,
     marginBottom: 10,
   },
   title: {
@@ -166,6 +304,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#d63384",
   },
   transactionContainer: {
+    flex: 1,
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 16,
