@@ -5,13 +5,25 @@ import PieChart from 'react-native-pie-chart'
 
 const ExpenseManagement = () => {
     const data = [
-        { name: "Nhà cửa", value: 4393000, color: "#7b6ef6", legendFontColor: "#7F7F7F" },
-        { name: "Trả nợ", value: 4220750, color: "#f6b26e", legendFontColor: "#7F7F7F" },
-        { name: "Sửa chữa/Bảo dưỡng", value: 3805500, color: "#6edfa6", legendFontColor: "#7F7F7F" },
-        { name: "Chợ, siêu thị", value: 3359334, color: "#f69c6e", legendFontColor: "#7F7F7F" },
+        { name: "Nhà cửa", value: 4393000, color: "rgba(123, 110, 246, 1)", legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Trả nợ", value: 4220750, color: "rgba(246, 178, 110, 1)", legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Sửa chữa/Bảo dưỡng", value: 3805500, color: "rgba(110, 223, 166, 1)", legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Chợ, siêu thị", value: 3359334, color: "rgba(246, 156, 110, 1)", legendFontColor: "rgba(127, 127, 127, 1)" },
+    ];
+    
+    const data2 = [
+        { name: "Nhà cửa", value: 4393000, color: "rgb(165, 157, 232)", legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Trả nợ", value: 4220750, color: "rgb(250, 212, 175)", legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Sửa chữa/Bảo dưỡng", value: 3805500, color: "rgb(180, 237, 209)", legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Chợ, siêu thị", value: 3359334, color: "rgb(245, 196, 171)", legendFontColor: "rgba(127, 127, 127, 1)" },
     ];
 
-    const widthAndHeight = 250
+    const data3 = [
+        { name: "Nhà cửa", value: 4393000, color: "rgba(123, 110, 246, 1)", legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Trả nợ", value: 4220750, color: 'white', legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Sửa chữa/Bảo dưỡng", value: 3805500, color: 'white', legendFontColor: "rgba(127, 127, 127, 1)" },
+        { name: "Chợ, siêu thị", value: 3359334, color: 'white', legendFontColor: "rgba(127, 127, 127, 1)" },
+    ];
 
     const series = [
       { value: 430, color: '#fbd203' },
@@ -41,9 +53,13 @@ const ExpenseManagement = () => {
                     <Text style={styles.change}>▲ 2.588.149đ cùng kỳ</Text>
                 </View>
             </View>
-            <PieChart widthAndHeight={widthAndHeight} series={data} cover={0.45} padAngle={0.02}/>
+            <View style={styles.piecontainer}>
+                <PieChart widthAndHeight={220} series={data3} cover={0.45} padAngle={0.05} style={{position: 'absolute', top: 90, left: 90}}/>
+                <PieChart widthAndHeight={200} series={data} cover={0.45} padAngle={0.05} style={{position: 'absolute', top: 100, left: 100}} />
+                <PieChart widthAndHeight={100} series={data2} cover={0.7} padAngle={0.07} style={{position: 'absolute', top: 150, left: 150}}/>
+            </View>
 
-            <View style={styles.categoryList}>
+            {/* <View style={styles.categoryList}>
                 {data.map((item, index) => (
                     <TouchableOpacity key={index} style={styles.categoryItem}>
                         <Text style={{ color: item.color, fontSize: 18 }}>⬤</Text>
@@ -51,13 +67,14 @@ const ExpenseManagement = () => {
                         <Text style={styles.categoryAmount}>{item.value.toLocaleString()}đ</Text>
                     </TouchableOpacity>
                 ))}
-            </View>
+            </View> */}
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#f5f5f5" },
+    piecontainer: {width: '100%', height: 500},
     header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: "#d63384", padding: 15 },
     headerTitle: { color: "white", fontSize: 18, fontWeight: "bold" },
     summaryContainer: { flexDirection: "row", justifyContent: "space-around", padding: 15 },

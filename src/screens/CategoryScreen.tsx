@@ -155,7 +155,7 @@ const CategoryScreen = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.title}>Giải trí</Text>
+        <Text style={styles.title}>{category}</Text>
       </View>
 
       {/* Biểu đồ */}
@@ -171,19 +171,20 @@ const CategoryScreen = () => {
 
         <BarChart
           data={barChartData}
-          width={width - 40}
+          width={width - 60}
           height={200}
           yAxisLabel=""
-          yAxisSuffix="đ" // Thêm dòng này để sửa lỗi
+          // yLabelsOffset={9999} 
+          yAxisSuffix="đ" 
           chartConfig={{
             backgroundGradientFrom: "#fff",
             backgroundGradientTo: "#fff",
             decimalPlaces: 0,
             color: (opacity = 1) => `rgba(214, 51, 132, ${opacity})`,
             labelColor: () => "#333",
-            style: { borderRadius: 16 },
+            style: { borderRadius: 16, position: 'relative', left: -20},
           }}
-          style={{ borderRadius: 16 }}
+          style={{ borderRadius: 16}}
         />
 
         <Text style={styles.alertText}>
@@ -203,7 +204,7 @@ const CategoryScreen = () => {
 
       {/* Danh sách giao dịch */}
       <View style={styles.transactionContainer}>
-        <Text style={styles.sectionTitle}>Giao dịch tháng 2</Text>
+        <Text style={styles.sectionTitle}>{`Giao dịch tháng ${month}`}</Text>
         <View style={styles.tabRow}>
           {["Tất cả", "Top chi tiêu", "Top người nhận"].map((tab) => (
             <TouchableOpacity

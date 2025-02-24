@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, StyleSheet } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CustomTabButton from "./customFloatingButton";
+import DevScreen from "../screens/dev";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,18 +14,6 @@ interface BottomTabNavigatorProps {
 const BottomTabNavigator = ({ tabs }: BottomTabNavigatorProps) => {
   return (
     <Tab.Navigator
-    //       screenOptions={({ route }) => ({
-//         tabBarIcon: ({color}) => {
-//           let iconName;
-//           if (route.name === "Home") iconName = "home";
-//           else if (route.name === "NewTransferStack") iconName = "exchange";
-//           else if (route.name === "TransactionLogStack") iconName = "history";
-//           else if (route.name === "DevScreen") iconName = "history";
-//           return <Icon name={iconName} size={40} color={color}/>;
-//         },
-//         tabBarActiveTintColor: 'rgba(135, 206, 250, 1)',
-//         tabBarInactiveTintColor: "gray",
-//       })}
       screenOptions={({route}) => ({
         headerShown: false,
         tabBarStyle: (route.name === 'NewTransferStack' || route.name === 'AIChatStack') ? styles.tabBarHidden : styles.tabBar,
