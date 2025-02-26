@@ -1,17 +1,17 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from '../screens/LoginScreen';
+import React, { useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import AuthStack from "./AuthNavigation";
+import MainTab from "./MainNavigaton";
 
-const Stack = createStackNavigator();
+export default function RootNavigator() {
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-const RootNavigator = () => {
-  return (  
+  return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Login" component={LoginScreen} />
-      </Stack.Navigator>
+      {isLoggedIn ? <MainTab /> : <AuthStack />}
     </NavigationContainer>
   );
-};
+}
 
-export default RootNavigator;  
+
+
