@@ -38,6 +38,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import AuthStack from "./AuthNavigation";
 import MainTab from "./MainNavigaton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { navigationRef } from '../api/navigationRef';
 
 export default function RootNavigator() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -57,8 +58,8 @@ export default function RootNavigator() {
   }, []);
 
   return (
-    <NavigationContainer>
-      {isLoggedIn ? <MainTab /> : <AuthStack />}
+    <NavigationContainer ref = {navigationRef}>
+      {<AuthStack />}
     </NavigationContainer>
   );
 }

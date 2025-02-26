@@ -48,3 +48,25 @@ export const forgotPassword = async (userData: any) => {
   }
 };
 
+export const refreshToken = async (userData: any, headers: object = {}) => {
+  try{
+    const response = await ApiManager.post("v1/api/refresh-token", userData, {headers});
+    return response.data;
+  } catch (error){
+    console.error("Verify Error:", error);
+    throw error;
+  }
+};
+
+export const expenseGet = async (userData: any) => {
+  try{
+    const response = await ApiManager.get("v1/api/get-expense", userData);
+    return response.data;
+  } catch (error){
+    console.error("OTP Error:", error);
+    throw error;
+  }
+};
+
+
+

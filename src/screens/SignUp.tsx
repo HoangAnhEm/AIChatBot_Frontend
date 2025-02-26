@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { colors } from '../constants/colors';
 import backImage from '../assets/signup.png';
 import { Ionicons } from "@expo/vector-icons";
-import {registerUser} from "../services/authServices";
+import {registerUser, expenseGet} from "../services/authServices";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -60,6 +60,27 @@ export default function SignUp() {
           );
         };
 
+    const test = async() => {
+        try{
+            const result  = await expenseGet();
+            if(result.code == 400){
+                setMessage("This email has already been registerd !!!");
+                showAlert('message', message);
+                }
+            else if(result.code == 201){
+                navigation.navigate('OTP',{ id: result.metadata.sessionId });
+                }
+//             await AsyncStorage.setItem('accessToken', result.accessToken);
+//             await AsyncStorage.setItem('refreshToken', email.refreshToken);
+            }
+        catch(error) {
+            console.error("Registration Error:", error);  // ✅ Log error details
+            setMessage("Registration failed! Check console for details.");
+            showAlert('message', message);
+            }
+        };
+
+
 
 
     return(
@@ -101,7 +122,7 @@ export default function SignUp() {
                          value={password}
                          onChangeText={(text) => setPassword(text)}
                     />
-                    <TouchableOpacity style={styles.button} onPress={onHandleValidate}>
+                    <TouchableOpacity style={styles.button} onPress={test}>
                          <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Create!!!</Text>
                     </TouchableOpacity>
                 </SafeAreaView>

@@ -39,6 +39,9 @@ export default function Test() {
             const result = await loginUser(userData);
             if(result.code = 200){
                 setMessage("Login Successful!");
+                console.log("Data", result);
+                await AsyncStorage.setItem('accessToken', result.metadata.accessToken);
+                await AsyncStorage.setItem('refreshToken', result.metadata.refreshToken);
                 showAlert('message', message);
                 }
             else{
