@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContextProvider, useAuthContext } from "../contexts/AuthContext";
 
 import { colors } from '../constants/colors';
 import backImage from '../assets/ts.png';
@@ -25,6 +26,7 @@ const { height, width } = Dimensions.get('window');
 
 export default function Test() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const setIsLoggedIn = useAuthContext().setLoginState;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -43,6 +45,7 @@ export default function Test() {
                 await AsyncStorage.setItem('accessToken', result.metadata.accessToken);
                 await AsyncStorage.setItem('refreshToken', result.metadata.refreshToken);
                 showAlert('message', message);
+                setIsLoggedIn(true);
                 }
             else{
                 setMessage("Something went wrong !!!");

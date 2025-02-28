@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import AuthStack from "./AuthNavigation";
-import MainTab from "./MainNavigaton";
+import MainTab from "./MainNavigation"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { navigationRef } from '../api/navigationRef';
+import { AuthContextProvider, useAuthContext } from "../contexts/AuthContext";
 
 export default function RootNavigator() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  return (
+    <AuthContextProvider>
+      <NavigationContainer ref={navigationRef}>
+        <AuthNavigator />
+      </NavigationContainer>
+    </AuthContextProvider>
+  );
+}
+
+function AuthNavigator() {
+  const isLoggedIn = useAuthContext().isLoggin;
+  const setIsLoggedIn = useAuthContext().setLoginState;
+
   const checkLoginStatus = async () => {
     const token = await AsyncStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
@@ -14,20 +27,11 @@ export default function RootNavigator() {
 
   useEffect(() => {
     checkLoginStatus();
-
-    const subscribe = setInterval(() => {
-      checkLoginStatus();
-    }, 1000);
-
-    return () => clearInterval(subscribe); // Cleanup on unmount
   }, []);
 
   return (
-    <NavigationContainer ref = {navigationRef}>
-      {<AuthStack />}
-    </NavigationContainer>
+    <>
+      {isLoggedIn ? <MainTab /> : <AuthStack />}
+    </>
   );
 }
-
-
-

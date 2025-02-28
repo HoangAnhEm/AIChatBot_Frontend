@@ -3,6 +3,7 @@ import { Modal, View, Text, TouchableOpacity, TextInput, Image, StyleSheet } fro
 import { Dropdown } from "react-native-element-dropdown";
 import Icon from "react-native-vector-icons/Feather";
 import Transaction from "../model/Transaction.model";
+import { CATEGORIES } from '../constants/categories';
 
 
 interface TransferEditModalProps {
@@ -16,13 +17,6 @@ interface TransferEditModalProps {
   transactionInfo: Transaction;
 }
 
-
-const categories = [
-  { label: "Entertainment ", value: "Giải trí" },
-  { label: "Shopping ", value: "Mua sắm" },
-  { label: "Transportation ", value: "Di chuyển" },
-  { label: "Health & Wellness", value: "Sức khỏe" },
-];
 
 const TransferEditModal = ({visible, updateConfirm, transactionInfo, close }: TransferEditModalProps) => {
     if(transactionInfo === undefined)
@@ -92,12 +86,12 @@ const TransferEditModal = ({visible, updateConfirm, transactionInfo, close }: Tr
 
             <Dropdown
             style={styles.dropdown}
-            data={categories}
+            data={CATEGORIES}
             labelField="label"
-            valueField="value"
+            valueField="name"
             placeholder={categorie}
             value={categorie}
-            onChange={(item) => setCategorie(item.value)}
+            onChange={(item) => setCategorie(item.name)}
             />
 
             <TouchableOpacity style={styles.proceedButton} onPress={() => {handleProceed()}}>

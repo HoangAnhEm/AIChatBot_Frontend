@@ -10,7 +10,7 @@ import AiChat from "../screens/AIChat";
 const tabs = [
   { name: "Home", component: HomeScreen, icon: "home" },
   { name: "NewTransferStack", component: NewTransferStack, icon: "exchange" },
-  { name: "AIChatStack", component: DevScreen, icon: "comments" },
+  { name: "AIChatStack", component: AiChat, icon: "comments" },
   { name: "TransactionLogStack", component: TransactionLogStack, icon: "history" },
   { name: "TransactionStatisticsStack", component: TransactionStatisticsStack, icon: "line-chart" },
 ];

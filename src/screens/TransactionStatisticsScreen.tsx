@@ -9,7 +9,7 @@ import { getTransactions } from "../api/transactionApi";
 import Transaction from "../model/Transaction.model";
 import {useTransactions} from "../contexts/TransactionsStactisticContext"
 import Icons from "react-native-vector-icons/MaterialIcons";
-
+import { CATEGORIES } from '../constants/categories';
 
 const TransactionStatisticsScreen = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -28,45 +28,35 @@ const TransactionStatisticsScreen = () => {
     const [month, setMonth] = useState(today.getMonth() + 1);
     const [year, setYear] = useState(today.getFullYear());
 
-    const [type, setType] = useState("Gửi"); 
+    const [type, setType] = useState("gửi"); 
 
-    const types = ["Nhận", "Gửi"];
-
-    const categories = [
-      { name: "Giải trí", color: "rgb(255, 87, 51)", innerColor: "rgb(248, 176, 160)" },
-      { name: "Mua sắm", color: "rgb(51, 161, 255)", innerColor: "rgb(161, 207, 248)" },
-      { name: "Di chuyển", color: "rgb(255, 215, 0)", innerColor: "rgb(253, 237, 144)" },
-      { name: "Sức khỏe", color: "rgb(53, 191, 58)", innerColor: "rgb(111, 245, 113)" },
-      { name: "Ăn uống", color: "rgb(255, 152, 0)", innerColor: "rgb(232, 193, 135)" },
-      { name: "Hóa đơn", color: "rgb(156, 39, 176)", innerColor: "rgb(183, 125, 193)" },
-      { name: "Khác", color: "rgb(96, 125, 139)", innerColor: "rgb(80, 146, 179)" }
-    ];
+    const types = ["nhận", "gửi"];
 
     
     const getCategoryColor = (categoryName: string) => {
-      return categories.find(cat => cat.name === categoryName)?.color || "#000000"; 
+      return CATEGORIES.find(cat => cat.name === categoryName)?.color || "#000000"; 
     };
 
     const getCategoryInnerColor = (categoryName: string) => {
-      return categories.find(cat => cat.name === categoryName)?.innerColor || "#000000"; 
+      return CATEGORIES.find(cat => cat.name === categoryName)?.innerColor || "#000000"; 
     };
 
     const totalSent = useMemo(() => {
-      return Object.values(classfiedTransactions?.[year]?.[month]?.["Gửi"] || {}).reduce(
+      return Object.values(classfiedTransactions?.[year]?.[month]?.["gửi"] || {}).reduce(
         (sum, categoryData) => sum + categoryData.total, 
         0
       );
     }, [classfiedTransactions, type]);
     
     const totalReceived = useMemo(() => {
-      return Object.values(classfiedTransactions?.[year]?.[month]?.["Nhận"] || {}).reduce(
+      return Object.values(classfiedTransactions?.[year]?.[month]?.["nhận"] || {}).reduce(
         (sum, categoryData) => sum + categoryData.total, 
         0
       );
     }, [classfiedTransactions, type]);
 
     const totalValue = useMemo(() => {
-      return type === 'Nhận' ? totalReceived : totalSent;
+      return type === 'nhận' ? totalReceived : totalSent;
     }, [classfiedTransactions, type])
     
     const pieData = useMemo(() => {
@@ -121,6 +111,12 @@ const TransactionStatisticsScreen = () => {
       trans: Transaction[];
       total: number;
     }
+    
+    const getTransactionIcon = (label: string) => {
+        const category = CATEGORIES.find(cat => cat.name.trim() === label.trim());
+        return category ? category.icon : 'question';
+    };
+
     const fetchTransactionsByTypeAndCategory = async (type: string, category: string) : Promise<Results | undefined>=> {
       if (!classfiedTransactions[year]?.[month]?.[type]?.[category]) {
         // Tiếp tục chạy
@@ -160,7 +156,7 @@ const TransactionStatisticsScreen = () => {
       try {
         setLoading(true);
         const typePromises = types.flatMap((type) =>
-          categories.map((cat) => fetchTransactionsByTypeAndCategory(type, cat.name))
+          CATEGORIES.map((cat) => fetchTransactionsByTypeAndCategory(type, cat.name))
         );
         const typeResults = await Promise.all(typePromises);
         loadTransaction(typeResults);
@@ -190,6 +186,11 @@ const TransactionStatisticsScreen = () => {
       if (newMonth === 0) {
         newMonth = 12;
         newYear -= 1;
+      }
+
+      if (newMonth === 13) {
+        newMonth = 1;
+        newYear += 1;
       }
     
       setMonth(newMonth);
@@ -228,14 +229,14 @@ const TransactionStatisticsScreen = () => {
                 </View>
                 <View style={styles.summaryContainer}>
                     <View style={styles.typeContainter}>
-                        <TouchableOpacity style={type === "Gửi" ? styles.summaryBoxSelected : styles.summaryBox} onPress={() => {handleTypeSelect("Gửi")}}>
+                        <TouchableOpacity style={type === "gửi" ? styles.summaryBoxSelected : styles.summaryBox} onPress={() => {handleTypeSelect("gửi")}}>
                             <View style = {{flexDirection: 'row', alignSelf: 'flex-start', gap: 5}}>  
                               <Icon name="arrow-up" size={24} color="red" /> 
                               <Text style={styles.summaryTitle}>Chi tiêu</Text>
                             </View>
                             <Text style={styles.amount}>{loading ? '' : formatAmount(totalSent)}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={type === "Nhận" ? styles.summaryBoxSelected : styles.summaryBox} onPress={() => {handleTypeSelect("Nhận")}}>
+                        <TouchableOpacity style={type === "nhận" ? styles.summaryBoxSelected : styles.summaryBox} onPress={() => {handleTypeSelect("nhận")}}>
                             <View style = {{flexDirection: 'row', alignSelf: 'flex-start', gap: 5}}>
                               <Icon name="arrow-down" size={24} color="green" /> 
                               <Text style={styles.summaryTitle}>Thu nhập</Text>
@@ -296,8 +297,8 @@ const TransactionStatisticsScreen = () => {
                               <TouchableOpacity style={styles.leftSection} onPress={() => {
                                   setSelectCategory(item.name);
                                   }}>
-                                  <View style={[styles.iconContainer, { backgroundColor: item.color + "20" }]}>
-                                      <Icon name="shopping-basket" size={18} color={item.color} />
+                                  <View style={[styles.iconContainer, { backgroundColor: "rgb(236, 238, 243)" }]}>
+                                      <Icon name={getTransactionIcon(item.name)} size={18} color={item.color} />
                                   </View>
                                   <Text style={styles.text}>{item.name}</Text>
                                   {/* <View style={styles.expand}></View> */}
@@ -306,7 +307,7 @@ const TransactionStatisticsScreen = () => {
                                   navigation.navigate("CategoryScreen", {category: item.name, type: type, year: year, month: month});
                               }}>
                                 <Text style={styles.value}>
-                                  {classfiedTransactions?.[year]?.[month]?.[type]?.[item.name]?.total || 0}
+                                  {formatAmount(classfiedTransactions?.[year]?.[month]?.[type]?.[item.name]?.total || 0)}
                                 </Text>
                                 <Icon name="chevron-right" size={14} color="#999" />
                               </TouchableOpacity>
@@ -394,7 +395,7 @@ const styles = StyleSheet.create({
       iconContainer: {
         width: 32,
         height: 32,
-        borderRadius: 16,
+        borderRadius: 3,
         justifyContent: "center",
         alignItems: "center",
         marginRight: 10,
