@@ -1,72 +1,78 @@
 import ApiManager from "../api/ApiManager";
 
-export const registerUser = async (userData: any) => {
+// Register User
+export const registerUser = async (userData) => {
   try {
-    const response = await ApiManager.post("v1/api/register", userData,);
+    const response = await ApiManager.post("v1/api/register", userData);
     return response.data;
   } catch (error) {
     console.error("Registration Error:", error);
     throw error;
   }
 };
-export const loginUser = async (userData: any) => {
-  try{
+
+// Login User
+export const loginUser = async (userData) => {
+  try {
     const response = await ApiManager.post("v1/api/login", userData);
     return response.data;
-  } catch (error){
+  } catch (error) {
     console.error("Login Error:", error);
     throw error;
   }
 };
-export const getOTP = async (userData: any) => {
-  try{
+
+// Get OTP
+export const getOTP = async (userData) => {
+  try {
     const response = await ApiManager.post("v1/api/otp", userData);
     return response.data;
-  } catch (error){
+  } catch (error) {
     console.error("OTP Error:", error);
     throw error;
   }
 };
 
-export const verifyOTP = async (userData: any, headers: object = {}) => {
-  try{
-    const response = await ApiManager.post("v1/api/verifyOTP", userData, {headers});
+// Verify OTP
+export const verifyOTP = async (userData, headers = {}) => {
+  try {
+    const response = await ApiManager.post("v1/api/verifyOTP", userData, { headers });
     return response.data;
-  } catch (error){
+  } catch (error) {
     console.error("Verify Error:", error);
     throw error;
   }
 };
 
-export const forgotPassword = async (userData: any) => {
-  try{
+// Forgot Password
+export const forgotPassword = async (userData) => {
+  try {
     const response = await ApiManager.post("v1/api/forgotPassword", userData);
     return response.data;
-  } catch (error){
-    console.error("OTP Error:", error);
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
     throw error;
   }
 };
 
-export const refreshToken = async (userData: any, headers: object = {}) => {
-  try{
-    const response = await ApiManager.post("v1/api/refresh-token", userData, {headers});
+// Refresh Token
+export const refreshToken = async (userData, headers = {}) => {
+  try {
+    const response = await ApiManager.post("v1/api/refresh-token", userData, { headers });
     return response.data;
-  } catch (error){
-    console.error("Verify Error:", error);
+  } catch (error) {
+    console.error("Refresh Token Error:", error);
     throw error;
   }
 };
 
-export const expenseGet = async (userData: any) => {
-  try{
-    const response = await ApiManager.get("v1/api/get-expense", userData);
+// Get Expenses (Fixed GET Request)
+export const expenseGet = async (params = {}) => {
+  try {
+    const response = await ApiManager.get("v1/api/get-expense", { params });
     return response.data;
-  } catch (error){
-    console.error("OTP Error:", error);
+  } catch (error) {
+    console.error("Expense Get Error:", error);
     throw error;
   }
 };
-
-
-

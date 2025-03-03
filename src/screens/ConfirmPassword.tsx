@@ -1,65 +1,73 @@
 import React, { useState } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import axios, { AxiosError } from "axios";
 
-import { colors } from '../constants/colors';
-import backImage from '../assets/ts.png';
-import {getOTP, verifyOTP} from "../services/authServices";
-
+import { verifyOTP } from "../services/authServices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   Text,
   View,
-  Image,
   Alert,
   TextInput,
-  StatusBar,
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
 
+// Define the RootStackParamList type
+type RootStackParamList = {
+  ConfirmPassword: { otpCode: string };
+  Login: undefined;
+};
+
 export default function ConfirmPassword() {
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'ConfirmPassword'>>();
     const route = useRoute<RouteProp<RootStackParamList, 'ConfirmPassword'>>();
 
-    const[newPassword, setNewPassword] = useState('');
-    const[reNewPassword, setReNewPassword] = useState('');
-    const[message, setMessage] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [reNewPassword, setReNewPassword] = useState('');
+    const [message, setMessage] = useState('');
 
-
-    const onHandleConfirm = async() =>{
+    const onHandleConfirm = async() => {
         const email = await AsyncStorage.getItem('email');
         const otpCode = route.params.otpCode;
-        const data = {email, otpCode, newPassword, reNewPassword}
-        try{
+        const data = {email, otpCode, newPassword, reNewPassword};
+        
+        try {
             const result = await verifyOTP(data);
-            if(result.code == 400){
-                setMessage("password do not match or OTP is wrong !!!");
-                showAlert('message', message);
-                }
-            else if(result.code == 200){
-                setMessage("reset successfully !!!");
-                showAlert('message', message);
+            if (result.code == 200) {
+                const successMsg = "Password reset successfully!!!";
+                setMessage(successMsg);
+                showAlert('Message', successMsg);
                 navigation.navigate('Login');
+            }
+        }
+        catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 400) {
+                    const errorMsg = "Passwords do not match or OTP is wrong!!!";
+                    setMessage(errorMsg);
+                    showAlert("Message", errorMsg);
+                    return;
                 }
             }
-        catch(error){
-            console.error("Confirm Error:", error);
-            }
-        console.log('email:', email);
-        };
+        
+            console.error("Unexpected Error:", error);
+            showAlert("Error", "Something went wrong. Please try again.");
+        }
+        
+    };
 
-    const showAlert = (title, message) => {
-          Alert.alert(
+    const showAlert = (title: string, message: string) => {
+        Alert.alert(
             title,
             message,
             [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
             { cancelable: true }
-          );
-        };
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -67,39 +75,40 @@ export default function ConfirmPassword() {
                 Confirm password
             </Text>
             <Text style={styles.normalText}>
-                Fill in the password field !!!
+                Fill in the password field!!!
             </Text>
             <SafeAreaView style={styles.form}>
                 <TextInput
-                     style={styles.input}
-                     placeholder="new-password"
-                     autoCapitalize="none"
-                     autoFocus
-                     value={newPassword}
-                     onChangeText={(text) => setNewPassword(text)}
+                    style={styles.input}
+                    placeholder="New password"
+                    autoCapitalize="none"
+                    secureTextEntry={true}
+                    autoFocus
+                    value={newPassword}
+                    onChangeText={(text) => setNewPassword(text)}
                 />
                 <TextInput
-                     style={styles.input}
-                     placeholder="renew-password"
-                     autoCapitalize="none"
-                     autoFocus
-                     value={reNewPassword}
-                     onChangeText={(text) => setReNewPassword(text)}
+                    style={styles.input}
+                    placeholder="Confirm new password"
+                    autoCapitalize="none"
+                    secureTextEntry={true}
+                    value={reNewPassword}
+                    onChangeText={(text) => setReNewPassword(text)}
                 />
                 <TouchableOpacity style={styles.button} onPress={onHandleConfirm}>
-                    <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Button!!!</Text>
+                    <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}>Confirm</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         </View>
-        );
-    }
+    );
+}
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#005A64',
         flex: 1,
         paddingHorizontal: 30,
-        },
+    },
     button: {
         alignItems: 'center',
         backgroundColor: '#9EFFEC',
@@ -108,27 +117,27 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 20,
         marginHorizontal: 80,
-        },
+    },
     header: {
-        alignSelf: 'left',
+        alignSelf: 'flex-start',
         color: '#9EFFEC',
         fontSize: 36,
         fontWeight: 'bold',
         marginTop: 30,
-        },
+    },
     form: {
         flex: 1,
         justifyContent: 'flex-start',
         marginHorizontal: 30,
         paddingTop: 200,
-        },
+    },
     normalText: {
-        alignSelf: 'left',
+        alignSelf: 'flex-start',
         color: '#fff',
         fontSize: 24,
         fontWeight: 'bold',
         fontStyle: 'italic',
-        },
+    },
     input: {
         backgroundColor: '#9EFFEC',
         borderRadius: 20,
@@ -137,5 +146,5 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         marginTop: 15,
         padding: 12,
-        },
-    })
+    },
+});

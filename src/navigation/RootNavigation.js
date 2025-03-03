@@ -31,7 +31,7 @@ function AuthNavigator() {
 
   return (
     <>
-      {isLoggedIn ? <MainTab /> : <AuthStack />}
+      {<AuthStack />}
     </>
   );
 }
