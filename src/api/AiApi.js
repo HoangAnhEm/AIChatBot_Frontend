@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const ChatApiManager = axios.create({
-  baseURL: "http://192.168.100.254:8080",
+  baseURL: "http://10.0.2.2:8080",
   timeout: 10000, 
   headers: {
     "Content-Type": "application/json", 
