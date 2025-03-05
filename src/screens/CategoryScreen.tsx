@@ -228,6 +228,8 @@ const CategoryScreen = () => {
             </TouchableOpacity>
           )}
         />}
+
+        <View style={styles.gap}></View>
       </View>
 
       {!loading && <TransferEditModal key={selectedTransIndex} visible={isEditModalVisible} updateConfirm={handleTransUpdate} 
@@ -336,6 +338,7 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "right",
   },
+  gap: {height: 60},
 });
 
 export default CategoryScreen;

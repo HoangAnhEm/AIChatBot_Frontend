@@ -213,7 +213,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 25,
     padding: 10,
-    margin: 10,
+    marginHorizontal: 10,
+    marginBottom: 10,
   },
   input: { flex: 1, fontSize: 16, paddingHorizontal: 10 },
   sendButton: {
