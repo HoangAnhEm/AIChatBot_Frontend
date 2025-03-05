@@ -110,17 +110,19 @@ const ChatScreen = () => {
           const Response = await AIChat({query: inputText, personality: personality})
   
           if(Response['description'] || Response['category'] || Response['amount'] || Response['type'] || Response['partner']){
-            settransactionInfo(new Transaction({
-              _id : null,
-              amount: Response['amount'] ? Response['amount'] : 0,
-              wallet: "Wallet number 1",
-              partner: Response['partner'] ? Response['partner'] : 0,
-              type: Response['type'] ? Response['type'] : 0,
-              category: Response['category'] ? Response['category'] : 0,
-              description: Response['description'] ? Response['description'] : 0,
-              createdAt: Date.now().toString()
-            }));
-            setisNewTrans(true)
+            if(Response['amount'] !== 0){
+              settransactionInfo(new Transaction({
+                _id : null,
+                amount: Response['amount'] ? Response['amount'] : 0,
+                wallet: "Wallet number 1",
+                partner: Response['partner'] ? Response['partner'] : 0,
+                type: Response['type'] ? Response['type'] : 0,
+                category: Response['category'] ? Response['category'] : 0,
+                description: Response['description'] ? Response['description'] : 0,
+                createdAt: Date.now().toString()
+              }));
+              setisNewTrans(true)
+            }
           }
           const newResponse = { 
             time: Date.now().toString() + 2, 
@@ -233,7 +235,7 @@ const ChatScreen = () => {
           <Text style={styles.floatingButtonText}>New Transfer!!</Text>
         </TouchableOpacity>}
       </View>
-      {(transactionInfo !== undefined) && <TransferEditModal visible={isEditModalVisible} updateConfirm={handleTransUpdate} 
+      {(transactionInfo !== undefined) && <TransferEditModal key = {isNewTrans ? 1 : 0} visible={isEditModalVisible} updateConfirm={handleTransUpdate} 
                                       transactionInfo={transactionInfo} close={handleCancel}/>}
       {/* Ô nhập tin nhắn */}
       <View style={styles.inputContainer}>
