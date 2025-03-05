@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker"
+import { CATEGORIES } from '../constants/categories';
 
 interface FilterModalProps {
   isVisible: boolean,
@@ -61,22 +62,16 @@ const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confirm,
     setEndDate(undefined);
     setIsTimeRangeValid(true)
   };
-  const categories = [
-    { label: "Entertainment ", value: "Giải trí" },
-    { label: "Shopping ", value: "Mua sắm" },
-    { label: "Transportation ", value: "Di chuyển" },
-    { label: "Health & Wellness", value: "Sức khỏe" },
-  ];
 
   const getCategoryValue = (label: string) => {
-    const category = categories.find(cat => cat.label.trim() === label.trim());
-    return category ? category.value : '';
+    const category = CATEGORIES.find(cat => cat.label.trim() === label.trim());
+    return category ? category.name : '';
   };
 
   const types = [
     { label: "Processing ", value: "Xử lý" },
-    { label: "Send ", value: "Gửi" },
-    { label: "Get ", value: "Nhận" },
+    { label: "Send ", value: "gửi" },
+    { label: "Get ", value: "nhận" },
   ];
 
   const getTypeValue = (label: string) => {
@@ -139,13 +134,13 @@ const FilterModal = ({ isVisible, category, type, startDate_, endDate_, confirm,
           <View style={styles.periodContainer}>
             <Text style={styles.sectionTitle}>Categorie</Text>
             <View style={styles.row}>
-              {["Shopping", "Entertainment", "Transportation", "Health & Wellness"].map((Categorie) => (
+              {CATEGORIES.map((Categorie) => (
                 <TouchableOpacity
-                  key={Categorie}
-                  style={[styles.filterButton, selectedCategorie === Categorie && styles.selected]}
-                  onPress={() => handleSelectedCategorie(Categorie)}
+                  key={Categorie.label}
+                  style={[styles.filterButton, selectedCategorie === Categorie.label && styles.selected]}
+                  onPress={() => handleSelectedCategorie(Categorie.label)}
                 >
-                  <Text style={[styles.filterText, selectedCategorie === Categorie && styles.selectedText]}>{Categorie}</Text>
+                  <Text style={[styles.filterText, selectedCategorie === Categorie.label && styles.selectedText]}>{Categorie.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>

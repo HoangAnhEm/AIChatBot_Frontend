@@ -2,38 +2,29 @@ import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet, Image} from "react-native";
 import Transaction from "../model/Transaction.model";
 import Icon from "react-native-vector-icons/FontAwesome";
+import {CATEGORIES} from "../constants/categories"
 
 
 const TransactionItem = ({transaction, onPress} : {transaction: Transaction, onPress: () => void }) => {
 
-  const getTransactionicon = (categorie : string) => {
-    switch (categorie) {
-      case "Giải trí":
-        return "film";
-      case "Mua sắm":
-        return "shopping-cart";
-      case "Di chuyển":
-        return "car";
-      case "Sức khỏe":
-        return "heartbeat";
-      default:
-        return "question";
-    }
+  
+  const getTransactionicon = (label: string) => {
+      const category = CATEGORIES.find(cat => cat.name.trim() === label.trim());
+      return category ? category.icon : 'question';
   };
 
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Unknown":
         return styles.pending;
-      case "Nhận":
+      case "nhận":
         return styles.confirmed;
-      case "Gửi":
+      case "gửi":
         return styles.canceled;
       default:
         return {};
     }
   }
-
 
 
   const formatDate = (date: Date) => {
@@ -82,7 +73,7 @@ const TransactionItem = ({transaction, onPress} : {transaction: Transaction, onP
 
       {/* Số tiền & Trạng thái */}
       <View style={styles.amountContainer}>
-        <Text style={styles.amount}>{transaction.type === 'Nhận' ? `+${amountFormat(transaction.amount)}` : `-${amountFormat(transaction.amount)}`}</Text>
+        <Text style={styles.amount}>{transaction.type === 'nhận' ? `+${amountFormat(transaction.amount)}` : `-${amountFormat(transaction.amount)}`}</Text>
         <Text style={[styles.status, getStatusStyle(transaction.type)]}>
           {transaction.type}    
         </Text>

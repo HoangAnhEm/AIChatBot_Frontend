@@ -7,13 +7,9 @@ import { Ionicons } from "@expo/vector-icons";
 import Icon from "react-native-vector-icons/Feather";
 import CustomModal from "../components/modal"
 import { createTransactions } from "../api/transactionApi";
+import { CATEGORIES } from '../constants/categories';
 
-const categories = [
-  { label: "Entertainment ", value: "Giải trí" },
-  { label: "Shopping ", value: "Mua sắm" },
-  { label: "Transportation ", value: "Di chuyển" },
-  { label: "Health & Wellness", value: "Sức khỏe" },
-];
+
 
 const TransferDetail = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -100,12 +96,12 @@ const TransferDetail = () => {
 
         <Dropdown
           style={styles.dropdown}
-          data={categories}
+          data={CATEGORIES}
           labelField="label"
-          valueField="value"
-          placeholder="categorie"
+          valueField="name"
+          placeholder="Categorie"
           value={categorie}
-          onChange={(item) => setCategorie(item.value)}
+          onChange={(item) => setCategorie(item.name)}
         />
 
         <TouchableOpacity style={styles.proceedButton} onPress={() => {handleProceed()}}>

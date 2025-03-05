@@ -99,11 +99,11 @@ const NewTransferScreen = () => {
 
       {/* Action Buttons */}
       <View style={styles.actions}>
-        <TouchableOpacity style={[styles.actionButton, transactionType === "Gửi" && styles.selectedActionButton]} onPress={() => {setTransactionType("Gửi")}}>
+        <TouchableOpacity style={[styles.actionButton, transactionType === "gửi" && styles.selectedActionButton]} onPress={() => {setTransactionType("gửi")}}>
           <Icon name="arrow-up" size={30} color="#4a90e2" />
           <Text style={styles.actionText}>Send money</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.actionButton, transactionType === "Nhận" && styles.selectedActionButton]} onPress={() => {setTransactionType("Nhận")}}>
+        <TouchableOpacity style={[styles.actionButton, transactionType === "nhận" && styles.selectedActionButton]} onPress={() => {setTransactionType("nhận")}}>
           <Icon name="arrow-down" size={30} color="#4a90e2" />
           <Text style={styles.actionText}>Get money</Text>
         </TouchableOpacity>
@@ -141,8 +141,8 @@ const NewTransferScreen = () => {
                                           onPress={() => {handleTransactionPartner(item.partner)}}>
                   <Image source={require("../assets/avatar.png")} style={styles.transactionAvatar} />
                   <Text style={styles.transactionName}>{item.partner}</Text>
-                  <Text style={[styles.transactionAmount, { color: item.amount === 0 ? 'orange' : item.type === "Nhận" ? 'green' : 'red'}]}>
-                    {item.amount === 0 ? 'Processing' : item.type === "Nhận" ? `+${item.amount}` : `-${item.amount}`}
+                  <Text style={[styles.transactionAmount, { color: item.amount === 0 ? 'orange' : item.type === "nhận" ? 'green' : 'red'}]}>
+                    {item.amount === 0 ? 'Processing' : item.type === "nhận" ? `+${item.amount}` : `-${item.amount}`}
                   </Text>
                 </TouchableOpacity>
               </View>
