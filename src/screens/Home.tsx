@@ -49,14 +49,6 @@ const HomeScreen = () => {
         </View>
 
 
-        {/* Easy Operations */}
-        <Text style={styles.sectionTitle}>Easy Operations</Text>
-        <View style={styles.operationsRow}>
-            <FeatureButton label='New' icon={'exchange'} onPress={() => {navigation.navigate('NewTransferStack')}}/>
-            <FeatureButton label='History' icon={'history'} onPress={() => {navigation.navigate('TransactionsScreen')}}/>
-            <FeatureButton label='Dev' icon={'history'} onPress={() => {navigation.navigate('DevScreen')}}/>
-        </View>
-
         {/* Transactions */}
         <Text style={styles.sectionTitle}>Previous Transactions</Text>
         <FlatList
@@ -73,15 +65,6 @@ const HomeScreen = () => {
             </View>
           )}
         />
-
-      {/* Bottom Navigation */}
-      {/* <View style={styles.bottomNav}>
-        {['home', 'bar-chart', 'file-text', 'user'].map((icon, index) => (
-          <TouchableOpacity key={index} style={styles.navButton}>
-            <Icon name={icon} size={24} color={icon === 'home' ? '#74C0FC' : '#999'} />
-          </TouchableOpacity>
-        ))}
-      </View> */}
     </SafeAreaView>
   );
 };

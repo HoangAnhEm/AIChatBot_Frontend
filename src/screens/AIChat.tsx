@@ -3,9 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, SafeArea
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/Feather";
-import {AIChat} from "../api/AiApi"
+import {AIChat, AIAsk} from "../api/AiApi"
 import {AIPersonalities} from "../constants/AiPersonaltity"
 import { Dropdown } from "react-native-element-dropdown";
+import Transaction from "../model/Transaction.model";
+import TransferEditModal from "../components/transferEditModal";
+import {createTransactions} from "../api/transactionApi"
 
 interface Message {
   text: string;
@@ -17,10 +20,13 @@ interface Message {
 
 const ChatScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  // const [loading, setloading] = useState(false);
+  const [isNewTrans, setisNewTrans] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [personality, setpersonality] = useState("friendly");
+  const [chattingType, setchattingType] = useState("Tạo giao dịch");
+  const [transactionInfo, settransactionInfo] = useState<Transaction | undefined>(undefined);
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -39,6 +45,45 @@ const ChatScreen = () => {
     return personality_ ? personality_.title : '?';
   };
   
+  const handleTransUpdate = async () => {
+    setIsEditModalVisible(false)
+    setisNewTrans(false)
+    var response : string = ""
+    try {
+      await createTransactions({
+        amount: transactionInfo?.amount, 
+        partner: transactionInfo?.partner,
+        wallet: transactionInfo?.wallet,
+        type: transactionInfo?.type,
+        category: transactionInfo?.category,
+        description: transactionInfo?.description,
+      });
+      response = 'Tạo giao dịch thành công'
+    } catch (error) {
+      response = 'Tạo giao dịch thất bại'
+    } finally {
+      const newResponse = { 
+        time: Date.now().toString() + 2, 
+        text: response, 
+        sender: "other", loading: false
+      }
+  
+      setMessages((prev) => {
+        const prevMess = [...prev, newResponse]; 
+        return prevMess
+      })
+    }
+  }
+
+  const handleCancel = () => {
+    setIsEditModalVisible(false)
+    setisNewTrans(false)
+  }
+
+  const handleSwitchChattingType = () => {
+    setchattingType(chattingType === "Tạo giao dịch" ? "Lấy giao dịch" : "Tạo giao dịch")
+  }
+
 
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true });
@@ -60,34 +105,76 @@ const ChatScreen = () => {
       };
       setMessages([...messages, newMessage, loadingResponse]);
 
-      // const newResponse = { id: (Date.now() + Math.floor(Math.random() * 1000)).toString(), text: "Ăn nói xamlon", sender: "other" };
-      try {
-        const Response = await AIChat({query: inputText, personality: personality})
-        const newResponse = { 
-          time: Date.now().toString() + 2, 
-          text: Response['advice'], 
-          sender: "other", loading: false
-        }
-        // setloading(false)
-        setMessages((prev) => {
-          const prevMess = [...prev.slice(0, -1), newResponse]; 
-          return prevMess
-        })
+      if(chattingType === "Tạo giao dịch"){
+        try {
+          const Response = await AIChat({query: inputText, personality: personality})
+  
+          if(Response['description'] || Response['category'] || Response['amount'] || Response['type'] || Response['partner']){
+            settransactionInfo(new Transaction({
+              _id : null,
+              amount: Response['amount'] ? Response['amount'] : 0,
+              wallet: "Wallet number 1",
+              partner: Response['partner'] ? Response['partner'] : 0,
+              type: Response['type'] ? Response['type'] : 0,
+              category: Response['category'] ? Response['category'] : 0,
+              description: Response['description'] ? Response['description'] : 0,
+              createdAt: Date.now().toString()
+            }));
+            setisNewTrans(true)
+          }
+          const newResponse = { 
+            time: Date.now().toString() + 2, 
+            text: Response['advice'], 
+            sender: "other", loading: false
+          }
+          // setloading(false)
+          setMessages((prev) => {
+            const prevMess = [...prev.slice(0, -1), newResponse]; 
+            return prevMess
+          })
+  
+        } catch (error) {
+          const newResponse = { 
+            time: Date.now().toString() + 2, 
+            text: "Oops, smth went wrong :<", 
+            sender: "other", loading: false
+          }
+          // setloading(false)
+          setMessages((prev) => {
+            const prevMess = [...prev.slice(0, -1), newResponse]; 
+            return prevMess
+          })
+          console.error("Lỗi khi gọi AI:", error);
+        } 
+      }
 
-      } catch (error) {
-        const newResponse = { 
-          time: Date.now().toString() + 2, 
-          text: "Oops, smth went wrong :<", 
-          sender: "other", loading: false
-        }
-        // setloading(false)
-        setMessages((prev) => {
-          const prevMess = [...prev.slice(0, -1), newResponse]; 
-          return prevMess
-        })
-        console.error("Lỗi khi gọi AI:", error);
-      } finally {
-
+      else{
+        try {
+          const Response = await AIAsk({query: inputText})
+          const newResponse = { 
+            time: Date.now().toString() + 2, 
+            text: Response['summary'], 
+            sender: "other", loading: false
+          }
+          // setloading(false)
+          setMessages((prev) => {
+            const prevMess = [...prev.slice(0, -1), newResponse]; 
+            return prevMess
+          })
+  
+        } catch (error) {
+          const newResponse = { 
+            time: Date.now().toString() + 2, 
+            text: "Oops, smth went wrong :<", 
+            sender: "other", loading: false
+          }
+          // setloading(false)
+          setMessages((prev) => {
+            const prevMess = [...prev.slice(0, -1), newResponse]; 
+            return prevMess
+          })
+          console.error("Lỗi khi gọi AI:", error);
+        } 
       }
     }
   };
@@ -132,11 +219,22 @@ const ChatScreen = () => {
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
       />
-      {/* Ô tạo yêu cầu */}
-      <TouchableOpacity style={styles.floatingButton}>
-        <Text style={styles.floatingButtonText}>Request AI</Text>
-      </TouchableOpacity>
 
+      <View style={styles.floatingButtons}>
+        {/* Ô tạo yêu cầu */}
+        <TouchableOpacity style={styles.floatingButton} onPress={handleSwitchChattingType}> 
+          <Text style={styles.floatingButtonText}>{chattingType}</Text>
+        </TouchableOpacity>
+
+        <View style={{flex: 1}}></View>
+
+        {/* Ô xác nhận giao dịch */}
+        {isNewTrans && <TouchableOpacity style={styles.floatingNofi} onPress={() => {setIsEditModalVisible(true)}}>  
+          <Text style={styles.floatingButtonText}>New Transfer!!</Text>
+        </TouchableOpacity>}
+      </View>
+      {(transactionInfo !== undefined) && <TransferEditModal visible={isEditModalVisible} updateConfirm={handleTransUpdate} 
+                                      transactionInfo={transactionInfo} close={handleCancel}/>}
       {/* Ô nhập tin nhắn */}
       <View style={styles.inputContainer}>
         <TextInput
@@ -179,15 +277,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "white",
   },
-  floatingButton: {
+  floatingButtons: {
+    flexDirection: "row",
     position: "relative",
     bottom: 0,
-    left: 20,
+    paddingHorizontal: 10,
+    height: 40, 
+    marginBottom: 10
+  },
+  floatingButton: {
     backgroundColor: "#3DB8FF",
-    height: 40, width: 110,
     borderRadius: 25,
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 10
+  },
+  floatingNofi: {
+    backgroundColor: "#3DB8FF",
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 10
   },
   floatingButtonText: { color: "white", fontSize: 16 },
   messageBubble: {
@@ -225,6 +337,10 @@ const styles = StyleSheet.create({
   dropdown: {
     borderRadius: 8,
   },
+  chattingType: {
+    fontSize: 16,
+    color: "white",
+  }
 });
 
 export default ChatScreen;

@@ -63,3 +63,16 @@ export const AIChat = async ({ query, personality }) => {
     throw error;
   }
 };
+
+const ASK_API_URL = "/ask";
+export const AIAsk = async ({ query }) => {
+  try {
+    const response = await ChatApiManager.post(ASK_API_URL, {
+      query,
+    });
+    return response.data.metadata;
+  } catch (error) {
+    console.error("Lỗi khi gọi API AI:", error);
+    throw error;
+  }
+};
