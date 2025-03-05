@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { colors } from '../constants/colors';
 import backImage from '../assets/signup.png';
 import { Ionicons } from "@expo/vector-icons";
-import {registerUser, expenseGet} from "../services/authServices";
+import { registerUser, expenseGet } from "../services/authServices";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -15,12 +15,18 @@ import {
   Image,
   Alert,
   TextInput,
-  StatusBar,
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+
+// Define the RootStackParamList type
+type RootStackParamList = {
+  OTP: { id: string };
+  SignUp: undefined;
+  Login: undefined;
+};
 
 const { height, width } = Dimensions.get('window');
 
@@ -30,58 +36,59 @@ export default function SignUp() {
     const [password, setPassword] = useState('');
     const [email, setUserEmail] = useState('');
     const [message, setMessage] = useState("");
+    
+    const showAlert = (title: string, message: string) => {
+      Alert.alert(
+        title,
+        message,
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        { cancelable: true }
+      );
+    };
+
     const onHandleValidate = async() => {
-        try{
+        try {
             const userData = { name, email, password };
             await AsyncStorage.setItem("email", email);
             const result = await registerUser(userData);
-            if(result.code == 400){
-                setMessage("This email has already been registerd !!!");
-                showAlert('message', message);
-                }
-            else if(result.code == 201){
-                navigation.navigate('OTP',{ id: result.metadata.sessionId });
-                }
-//             await AsyncStorage.setItem('accessToken', result.accessToken);
-//             await AsyncStorage.setItem('refreshToken', email.refreshToken);
+            
+            if(result.code === 400) {
+                setMessage("This email has already been registered!");
+                showAlert('Registration Error', message);
             }
+            else if(result.code === 200) {
+                navigation.navigate('OTP', { id: result.metadata.sessionId });
+            }
+            // await AsyncStorage.setItem('accessToken', result.accessToken);
+            // await AsyncStorage.setItem('refreshToken', email.refreshToken);
+        }
         catch(error) {
-            console.error("Registration Error:", error);  // ✅ Log error details
+            console.error("Registration Error:", error);
             setMessage("Registration failed! Check console for details.");
-            showAlert('message', message);
-            }
-        };
-    const showAlert = (title, message) => {
-          Alert.alert(
-            title,
-            message,
-            [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-            { cancelable: true }
-          );
-        };
+            showAlert('Error', message);
+        }
+    };
 
     const test = async() => {
-        try{
-            const result  = await expenseGet();
-            if(result.code == 400){
-                setMessage("This email has already been registerd !!!");
-                showAlert('message', message);
-                }
-            else if(result.code == 201){
-                navigation.navigate('OTP',{ id: result.metadata.sessionId });
-                }
-//             await AsyncStorage.setItem('accessToken', result.accessToken);
-//             await AsyncStorage.setItem('refreshToken', email.refreshToken);
+        try {
+            const result = await expenseGet();
+            
+            if(result.code === 400) {
+                setMessage("This email has already been registered!");
+                showAlert('Error', message);
             }
+            else if(result.code === 201) {
+                navigation.navigate('OTP', { id: result.metadata.sessionId });
+            }
+            // await AsyncStorage.setItem('accessToken', result.accessToken);
+            // await AsyncStorage.setItem('refreshToken', email.refreshToken);
+        }
         catch(error) {
-            console.error("Registration Error:", error);  // ✅ Log error details
-            setMessage("Registration failed! Check console for details.");
-            showAlert('message', message);
-            }
-        };
-
-
-
+            console.error("API Error:", error);
+            setMessage("Request failed! Check console for details.");
+            showAlert('Error', message);
+        }
+    };
 
     return(
         <>
@@ -122,28 +129,29 @@ export default function SignUp() {
                          value={password}
                          onChangeText={(text) => setPassword(text)}
                     />
-                    <TouchableOpacity style={styles.button} onPress={test}>
+                    <TouchableOpacity style={styles.button} onPress={onHandleValidate}>
                          <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}> Create!!!</Text>
                     </TouchableOpacity>
                 </SafeAreaView>
             </View>
         </>
-        );
-    }
+    );
+}
+
 const styles = StyleSheet.create({
     header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingTop: 25 },
     container: {
         justifyContent: 'flex-start',
         backgroundColor: '#fff',
         flex: 1,
-        },
+    },
     backImage: {
         height: height,
         position: 'absolute',
         resizeMode: 'cover',
         top: 0,
         width: '100%',
-      },
+    },
     button: {
         alignItems: 'center',
         backgroundColor: '#9EFFEC',
@@ -152,34 +160,34 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 20,
         marginHorizontal: 80,
-        },
+    },
     title: {
         alignSelf: 'center',
         color: 'black',
         fontSize: 48,
         fontWeight: 'bold',
         marginTop: 20,
-        },
+    },
     description: {
         alignSelf: 'center',
         color: 'black',
         fontSize: 24,
         fontWeight: 'bold',
         fontStyle: 'italic',
-        },
+    },
     placeHolder: {
-        alignSelf: 'left',
+        alignSelf: 'flex-start',
         color: '#9EFFEC',
         fontSize: 20,
         fontWeight: 'bold',
         fontStyle: 'italic',
-        },
+    },
     form: {
         flex: 1,
         justifyContent: 'flex-start',
         marginHorizontal: 30,
         paddingTop: 250,
-      },
+    },
     input: {
         backgroundColor: '#9EFFEC',
         borderRadius: 20,
@@ -188,20 +196,19 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         marginTop: 15,
         padding: 12,
-      },
+    },
     backButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      position: "absolute",
-      top: 40, // Điều chỉnh nếu cần
-      //left: 20,
-      zIndex: 10, // Đảm bảo hiển thị trên các phần khác
-      padding: 10,
-      borderRadius: 8,
+        flexDirection: "row",
+        alignItems: "center",
+        position: "absolute",
+        top: 40,
+        zIndex: 10,
+        padding: 10,
+        borderRadius: 8,
     },
     backText: {
-          fontSize: 16,
-          color: "black",
-          marginLeft: 5,
-        },
-    });
+        fontSize: 16,
+        color: "black",
+        marginLeft: 5,
+    },
+});

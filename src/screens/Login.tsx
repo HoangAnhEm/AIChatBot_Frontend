@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { AuthContextProvider, useAuthContext } from "../contexts/AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 
 import { colors } from '../constants/colors';
 import backImage from '../assets/ts.png';
-import {loginUser} from "../services/authServices";
+import { loginUser } from "../services/authServices";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -22,11 +22,18 @@ import {
   Dimensions,
 } from 'react-native';
 
+// Define the RootStackParamList type
+type RootStackParamList = {
+  SignUp: undefined;
+  ForgotPassword: undefined;
+  Home: undefined;
+};
+
 const { height, width } = Dimensions.get('window');
 
 export default function Test() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const setIsLoggedIn = useAuthContext().setLoginState;
+    const { setLoginState: setIsLoggedIn } = useAuthContext();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -36,33 +43,31 @@ export default function Test() {
     };
 
     const onHandleLG = async () => {
-        try{
+        try {
             const userData = { email, password };
             const result = await loginUser(userData);
-            if(result.code = 200){
+            if (result.code === 200) {  // Fixed comparison operator
                 setMessage("Login Successful!");
                 console.log("Data", result);
                 await AsyncStorage.setItem('accessToken', result.metadata.accessToken);
                 await AsyncStorage.setItem('refreshToken', result.metadata.refreshToken);
-                showAlert('message', message);
+                showAlert('Success', message);  // Changed title to be more descriptive
                 setIsLoggedIn(true);
-                }
-            else{
+            } else {
                 setMessage("Something went wrong !!!");
-                showAlert('message', message);
+                showAlert('Error', message);  // Changed title to be more descriptive
                 console.log("Server Response:", result);
-                }
-
             }
-        catch(error) {
+        } catch (error) {
             console.error("Login Error:", error);  //  Log error details
             setMessage("Login failed! Check console for details.");
-            }
-        };
+            showAlert('Error', message);  // Added alert for error case
+        }
+    };
 
     const onHandleSignUp = () => {
         navigation.navigate('SignUp');
-        };
+    };
 
     return (
       <>
@@ -112,22 +117,20 @@ export default function Test() {
         </View>
       </>
     );
-
-    }
+}
 
 const styles = StyleSheet.create({
-
     container: {
         backgroundColor: '#fff',
         flex: 1,
-        },
+    },
     backImage: {
         height: height,
         position: 'absolute',
         resizeMode: 'cover',
         top: 0,
         width: '100%',
-      },
+    },
     lButton: {
         alignSelf: 'center',
         backgroundColor: '#9EFFEC',
@@ -136,7 +139,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 40,
         width: 100
-        },
+    },
     button: {
         alignItems: 'center',
         backgroundColor: '#9EFFEC',
@@ -145,34 +148,34 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 20,
         marginHorizontal: 60,
-        },
+    },
     title: {
         alignSelf: 'center',
         color: 'black',
         fontSize: 48,
         fontWeight: 'bold',
         marginTop: 20,
-        },
+    },
     description: {
         alignSelf: 'center',
         color: 'black',
         fontSize: 24,
         fontWeight: 'bold',
         fontStyle: 'italic',
-        },
+    },
     placeHolder: {
-        alignSelf: 'left',
+        alignSelf: 'flex-start',  // Fixed from 'left' to 'flex-start'
         color: 'black',
         fontSize: 24,
         fontWeight: 'bold',
         fontStyle: 'italic',
-        },
+    },
     form: {
         flex: 1,
         justifyContent: 'flex-start',
         marginHorizontal: 30,
         paddingTop: 250,
-      },
+    },
     input: {
         backgroundColor: '#9EFFEC',
         borderRadius: 20,
@@ -181,17 +184,17 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         marginTop: 15,
         padding: 12,
-      },
+    },
     backButton: {
         flexDirection: "row",
         alignItems: "center",
         // position: "absolute",
         // top: 40,
         // left: 20,
-      },
+    },
     backText: {
         fontSize: 16,
         color: "green",
         marginLeft: 5,
-      },
-    });
+    },
+});
